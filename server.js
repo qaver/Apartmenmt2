@@ -13,14 +13,23 @@ const DIST_FOLDER = path.join(__dirname, '/dist/aparmtment_1/browser');
 app.use(express.static(DIST_FOLDER));
 
 // Redirect all other requests to the index.html file
-console.log(path.join(DIST_FOLDER, 'index.html'));
+//console.log(path.join(DIST_FOLDER, 'index.html'));
 app.get('/reports', async (req, res) => {
   res.sendFile(path.join(DIST_FOLDER, 'index.html'));
 })
 app.get('/transaction', async (req, res) => {
   res.sendFile(path.join(DIST_FOLDER, 'index.html'));
 })
+app.get('/globalsettings', async (req, res) => {
+  res.sendFile(path.join(DIST_FOLDER, 'index.html'));
+})
+app.get('/accountstree', async (req, res) => {
+  res.sendFile(path.join(DIST_FOLDER, 'index.html'));
+})
 
+app.get('/*splat', async (req, res) => {
+  res.sendFile(path.join(DIST_FOLDER, 'index.html'));
+})
 
 // Start the server
 app.listen(PORT, () => {
