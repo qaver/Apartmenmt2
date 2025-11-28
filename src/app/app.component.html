@@ -1,0 +1,33 @@
+<h1 style="width:16%;display:flex;justify-content: center;align-items: center;">{{title}} <button [disabled]="voiceRecogition.GetvoiceRecorgintionRunning()" (click)="startListening()">Voice</button>
+  <button [disabled]="!voiceRecogition.GetvoiceRecorgintionRunning()"(click)="stopListening()" id="stoplistening">Stop</button>
+ @if(voiceRecogition.GetvoiceRecorgintionRunning())
+  {
+    <h2>VR ON</h2>
+  }
+  @else
+  {
+    <h2>VR OFF</h2>
+  }
+
+</h1>
+<div id="main"></div>
+<!--<label for="url">url:</label>
+<input type="url" id="url" [(ngModel)]="GlobalsettingsService.getGlobalSettings().url" name="url">
+<br>
+<br>-->
+ <br>
+
+<!--<p id="Voice_Messages">No Voice Messages yet.</p>-->
+<nav>
+  <a class="MainButton" routerLink="/accounttree">Accounts</a>
+  <a class="MainButton"routerLink="/transaction">Vouchers</a>
+  <a class="MainButton" routerLink="/reports">Reports</a>
+  <a class="MainButton" routerLink="/globalsettings">Settings</a>
+
+
+
+</nav>
+
+<router-outlet></router-outlet>
+ <!--<ion-router-outlet></ion-router-outlet> -->
+

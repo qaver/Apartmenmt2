@@ -1,0 +1,10 @@
+{
+  "appId": "com.apartmentapp.com",
+  "appName": "ApartmentAccounts",
+  "webDir": "dist",
+  "plugins": {
+    "SplashScreen": {
+      "launchAutoHide": false
+    }
+  }
+}

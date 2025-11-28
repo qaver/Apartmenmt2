@@ -1,0 +1,92 @@
+@if (account)
+{
+  <app-messages></app-messages>
+  <div>
+    @if (account.Id > 0)
+    {
+      <h2> Edit {{account.Name | uppercase}} Details</h2>
+      <span>id: </span>{{account.Id}}
+      <label for="nameInput">Parent Name:</label>
+      <span id="ParentNameLabel">{{ account.ParentName }}</span>
+      <label for="nameInput">Type:</label>
+      <span id="TypeLabel">{{ account.AcType }}</span>
+      <br>
+      <br>
+    }
+    @else
+    {
+      <h2>Add Account type={{account.AcType}}</h2>
+    }
+  <div>
+     <!--@if (account.Id < 0)
+    {
+      <div>
+         <label class="custom-label" for="AccountType">Type:</label>
+          <input class="custom-input" [(ngModel)]="actype"  (change)="validateAccountType()" list="AccountTypes" id="AccountType" name="AccountType" placeholder="Debtor">
+
+          <datalist id="AccountTypes">
+              <option value="General">
+              <option value="Debtor">
+              <option value="Creditor">
+              <option value="Income">
+              <option value="Expense">
+              <option value="PettyCash">
+              <option value="Cash">
+              <option value="Bank">
+          </datalist>
+          <br>
+          <label class="custom-label" for="type">Type: </label>
+          <label class="custom-label" for="typeValue">{{account.AcType}}</label>
+      </div>
+    }-->
+    <div>
+      <label class="custom-label" for="Code">Code: </label>
+      <input class="custom-input" id="Code" [(ngModel)]="account.Code" placeholder="Code"/>
+      <br>
+      <label class="custom-label" for="Name">Name: </label>
+      <input class="custom-input" id="Name" [(ngModel)]="account.Name" placeholder="Name"/>
+      <br>
+     </div>
+
+    <div>
+    <label class="custom-label" for="Email">Email: </label>
+    <input class="custom-input" id="Email" [(ngModel)]="account.Email" placeholder="Email"/>
+      <br>
+    <label class="custom-label"for="PhoneNo">Phone No: </label>
+    <input class="custom-input" id="PhoneNo" [(ngModel)]="account.PhoneNo" placeholder="Phone No"/>
+      <br>
+    <label class="custom-label" for="Tenant">Tenant: </label>
+    <input class="custom-input" id="Tenant" [(ngModel)]="account.Tenant" placeholder="Tenant"/>
+    <br>
+  </div>
+  <div>
+    <label class="custom-label" for="Address1">Address1: </label>
+    <input class="custom-input" id="Address1" [(ngModel)]="account.Address1" placeholder="House No"/>
+      <br>
+    <label class="custom-label" for="Address2">Address2: </label>
+    <input class="custom-input" id="Address2" [(ngModel)]="account.Address2" placeholder="Street"/>
+      <br>
+    <label class="custom-label" for="Address3">Address3: </label>
+    <input class="custom-input" id="Address3" [(ngModel)]="account.Address3" placeholder="City/State"/>
+      <br>
+    </div>
+  </div>
+  <!-- <div style="width:20%;display:flex;justify-content: center;align-items: center; "> -->
+    <div class="accountbuttons">
+      @if (account.Id < 0)
+      {
+        <button class="accountbutton" type="button" (click)="goBack()">Exit</button>
+      }
+      @else
+      {
+          <button class="accountbutton" type="button" (click)="goBack()">Back</button>
+      }
+      <button class="accountbutton" type="button" (click)="save()">Save</button>
+   </div>
+    <!--<button type="button" (click)="delete()">Delete</button>-->
+  </div>
+}
+@else
+{
+   <h2>Account Not Found</h2>
+}

@@ -1,0 +1,72 @@
+@if(messageService.messages.length > 0)
+{
+  <h2>Messages</h2>
+  <div> current name = '{{messageService.hero.name}}' and id = {{messageService.hero.id}}</div>
+  <button type="button" class="clear"  (click)="settingsService.clear()" (click)="messageService.clear()">Clear messages</button>
+  @for (message of messageService.messages; track message)
+  {
+    <div> {{message}}</div>
+  }
+  @empty
+  {
+
+    <h2>No messages yet. {{messageService.hero.name}} and id {{messageService.hero.id}}</h2>
+  }
+
+}
+@else
+{
+  <h2>No messages yet. name = '{{messageService.hero.name}}' and id {{messageService.hero.id}}</h2>
+}
+@if(settingsService.getmessage().length > 0)
+{
+  <div> msg = {{settingsService.getmessage()}} count = {{settingsService.getCount()}}</div>
+}
+@else {
+  <div> setting service not found.</div>
+}
+@if (hero2.length > 0)
+{
+  <ul class="heroes">
+  @for (hero of hero2; track hero.id)
+   {
+    <li>
+      <button type="button" [class.selected]="hero === hero1" (click)="onSelect(hero)" >
+        <span class="badge">{{hero.id}}</span>
+        <span class="name">{{hero.name}}</span>
+      </button>
+    </li>
+    }
+      @empty
+    {
+    Empty list of users
+    }
+
+  </ul>
+}
+<h1>{{title}}</h1>
+<div *ngIf="hero1">
+
+  <h2>{{hero1.name | uppercase}} Details</h2>
+  <div><span>id: </span>{{hero1.id}}</div>
+  <div>
+    <label for="hero-name">Hero name2: </label>
+    <input id="hero-name" [(ngModel)]="hero1.name" placeholder="name">
+  </div>
+
+</div>
+
+<!-- <app-heroes  (newItemEvent)="selectHero($event)"></app-heroes>-->
+<app-messages></app-messages>
+<nav>
+  <a routerLink="/transaction">transaction</a>
+  <a routerLink="/heroes">Heroes</a>
+</nav>
+<router-outlet></router-outlet>
+
+<!-- you can change the value of the  varialbe
+  also <app-heroes  (newItemEvent)="selectHero({id:$event.id*10,name:$event.name + '_NewValue'})"></app-heroes>> -->
+
+<!-- (newItemEvent)="selectHero($event)"-->
+
+

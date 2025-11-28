@@ -1,0 +1,430 @@
+
+   <!-- <div class="report-row ">
+    <input    [(ngModel)]="reportType" [style]="{'width':'140px'}" class="custom-input"    list="reportTypes" id="reportType" name="reportType" placeholder="Report Name">
+    <datalist  id="reportTypes"  [style]="{'width':'10%'}">
+        @for (report of reportTypes; track report)
+        {
+          <option>{{report}}</option>
+        }
+        <option></option>
+    </datalist>
+
+     <label for="from-date1">From</label>
+    <input  [style]="{'width':'110px'}" [(ngModel)]="fromDate" type="text" id="from-date" name="fromDate" [value]="2025/01/01">
+     <label for="to-date1 ">To</label>
+    <input [style]="{'width':'110px'}"  pInputText type="text"  id="to-date"  [(ngModel)]="toDate"/>
+    <input    (blur)="onaccountGroupSelected($event)"  [(ngModel)]="groupName" [style]="{'width':'110px'}" class="custom-input"    list="accountGroups" id="accountGroup" name="accountGroup" placeholder="Group Name">
+    <datalist  id="accountGroups"  [style]="{'width':'110px'}">
+        @for (groupName of groupNames; track groupName)
+        {
+          <option>{{groupName}}</option>
+        }
+    </datalist>
+
+    <input    [(ngModel)]="accountName" [style]="{'width':'200px'}" class="custom-input"    list="accountNames" id="accountName" name="accountName" placeholder="Account Name">
+    <datalist  id="accountNames"  [style]="{'width':'200px'}">
+        @for (accountName of accountNames; track accountName)
+        {
+          <option>{{accountName.Name}}</option>
+        }
+    </datalist>
+
+    <button type="button" (click)="generateReport()">Generate</button>
+    <button (click)="exportPdf()" pButton label="Export as PDF"></button>
+
+  </div>
+  <br>
+
+-->
+
+<!--<p-table
+    [value]="companyProfiles"
+    rowGroupMode="subheader"
+    groupRowsBy="sector"
+    [scrollable]="true"
+    scrollHeight="350px">
+
+    <ng-template pTemplate="header">
+        <tr>
+            <th style="min-width:200px">
+                Company</th>
+            <th style="min-width:200px">
+                This Year Sales</th>
+            ...
+        </tr>
+    </ng-template>
+    <ng-template    style="align-items:center;" pTemplate="groupheader" let-company>
+        <tr pRowGroupHeader>
+            <td colspan="2">
+                <span class="font-bold">
+                    {{company.sector}}</span>
+            </td>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-company>
+        <tr>
+            <td style="min-width:200px">
+                {{company.name}}</td>
+            <td style="min-width:200px">
+                {{company.thisYearSales}}</td>
+            ...
+        </tr>
+    </ng-template>
+</p-table> -->
+<!--<p-table [value]="generalLegerRecords" styleClass="p-datatable-gridlines">
+  <ng-template pTemplate="header">
+    <tr>
+      <th>Code</th>
+      <th>Name</th>
+      <th>Category</th>
+      <th>Quantity</th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-gl>
+    <tr>
+      <td>{{ gl.Account1_Name }}</td>
+      <td>{{ gl.Account2_Name }}</td>
+      <td>{{ gl.Account1_Name }}</td>
+      <td>{{ gl.Account1_Name }}</td>
+    </tr>
+  </ng-template>
+</p-table> --->
+<!-- [tableStyle]="{'min-width': '50rem','border-collapse': 'collapse','border': '1px solid #ccc','background-color': '#f0f0f0','table-layout':'auto'}
+ -->
+<div>
+  <app-messages></app-messages>
+ </div>
+<div #printContent class="card">
+  <p-table
+        #printContentGrid
+        [value]="generalLegerRecords"
+        rowGroupMode="subheader"
+        groupRowsBy="Account1_Name"
+        [scrollable]="isScrollable"
+        expandableRowGroups="true"
+        [scrollHeight]="scrollH"
+        scrollDirection="both"
+        showGridlines
+        [resizableColumns]="true"
+        columnResizeMode="expand"
+        stripedRows
+        [tableStyle]="{'min-width': '50rem','background-color': '#f0f0f0', width: 'max-content' }  "
+  >
+         <ng-template #caption>
+            <div class="text-end pb-4">
+                <input    [(ngModel)]="reportType" [style]="{'width':'140px'}" class="custom-input"    list="reportTypes" id="reportType" name="reportType" placeholder="Report Name">
+                <datalist  id="reportTypes"  [style]="{'width':'10%'}">
+                    @for (report of reportTypes; track report)
+                    {
+                      <option>{{report}}</option>
+                    }
+                    <option></option>
+                </datalist>
+                 <label for="from-date1">From</label>
+                <input  [style]="{'width':'110px'}" [(ngModel)]="fromDate" type="text" id="from-date" name="fromDate" [value]="2025/01/01">
+                <label for="to-date1 ">To</label>
+                <input [style]="{'width':'110px'}"  pInputText type="text"  id="to-date"  [(ngModel)]="toDate"/>
+                <input    (blur)="onaccountGroupSelected($event)"  [(ngModel)]="groupName" [style]="{'width':'110px'}" class="custom-input"    list="accountGroups" id="accountGroup" name="accountGroup" placeholder="Group Name">
+                <datalist  id="accountGroups"  [style]="{'width':'110px'}">
+                    @for (groupName of groupNames; track groupName)
+                    {
+                      <option>{{groupName}}</option>
+                    }
+                </datalist>
+
+                <input    [(ngModel)]="accountName" [style]="{'width':'200px'}" class="custom-input"    list="accountNames" id="accountName" name="accountName" placeholder="Account Name">
+                <datalist display="chip" id="accountNames"  [style]="{'width':'200px'}">
+                    @for (accountName of accountNames; track accountName)
+                    {
+                      <option>{{accountName.Name}}</option>
+                    }
+                </datalist>
+                <p-button id="Generate"  label="Generate" (click)="generateReport()" />
+                <p-button id="Export"   label="Export" (click)="exportPdf()" />
+                <!-- <p-button id="Generate" icon="pi pi-external-link" label="Generate" (click)="generateReport()" />
+                <p-button type="button" icon="pi pi-chevron-left" (click)="prev()" [disabled]="isFirstPage()" text />
+                <p-button type="button" icon="pi pi-refresh" (click)="reset()" text />
+                <p-button type="button" icon="pi pi-chevron-right" (click)="next()" [disabled]="isLastPage()" text />
+              -->
+            </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+            <tr style="width:100%;">
+              @for (col of colsGeneralLedger; track ['field'])
+              {
+               @if((!col.hide) && (col.field !== 'Account1_Name'))
+                {
+                  @if ( col.headerText !== '')
+                  {
+                    @if(col.field !== 'Account2_Name')
+                    {
+                        <th  style= " border-top: 0px solid rgb(24,93,150); background-color: rgb(24,93,150);color: white; font-weight: bold; width:260px;">{{col.headerText}}</th>
+                    }
+                    @else
+                    {
+                       <th  style= " border-top: 0px solid rgb(24,93,150);background-color: rgb(24,93,150); color: white; font-weight: bold; width:330px  ">{{col.headerText}}</th>
+                    }
+
+                  }
+                  @else
+                  {
+                    <th style="width:210px">{{col.field}}</th>
+                  }
+                }
+              }
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="groupheader"    let-Record let-expanded="expanded">
+            <tr pRowGroupHeader>
+                <td style="text-align:center;background-color:rgb(178,174,188);color: white;"  colspan="9">
+                   <!-- <button type="button" pButton pRipple [pRowToggler]="Record" class="p-button-text p-button-rounded p-button-plain p-mr-2">
+                      <span [ngClass]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></span>
+                    </button> -->
+                    <span class="font-bold ml-2">{{ Record.Account1_Name }}</span>
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template #groupfooter let-Record>
+            <tr style = "border-top: 0px solid rgb(24,93,150); color: red;background-color:white; font-weight: bold;" class="p-rowgroup-footer">
+                <td colspan="6" style="text-align:right;width:230px">Sub Total</td>
+                <td style="text-align:right;width:230px">{{calculateCustomerTotalDr(Record.Account1_Name)}}</td>
+                <td style="text-align:right;width:230px" >{{calculateCustomerTotalCr(Record.Account1_Name)}}</td>
+                <td style="text-align:right;width:250px" >{{calculateCustomerTotalGroupBalance(Record.Account1_Name)}}</td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="footer">
+            <tr style = "border-top: 0px solid rgb(24,93,150); color: red;background-color:white; font-weight:bolder;" >
+                <td colspan="6" style="text-align:right;width:230px">Report Total </td>
+                <td style="text-align:right;width:230px">{{reportTotalDr.toFixed(this.no_of_decimals)}}</td>
+                <td style="text-align:right;width:230px" >{{reportTotalCr.toFixed(this.no_of_decimals)}}</td>
+                <td style="text-align:right;width:250px" >{{reportTotalBalanceText}}</td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body"
+            let-Record>
+            <tr>
+              {{updateRunningTotal(Record.RowNo,Record.Amount,Record.Account1_Name)}}
+              <td style="text-align:left;width:230px;color:black">
+                  {{GetVoucherNo(Record)}}
+                  <!-- <p-tag [value]="Record.VoucherNo" />-->
+                </td>
+                <td style="text-align:left;width:230px;color:black">
+                  {{ GetVoucherDate(Record)}}
+                </td>
+                <td [ngStyle]="OpeningRow(Record)" style="text-align:left;width:330px">
+                    {{GetAccount2Name(Record)}}
+                </td>
+
+                <td style="text-align:left;width:230px;color:black">
+                  {{Record.ChequeNo}}
+                </td>
+                <td style="text-align:left;width:230px;color:black">
+                    {{Record.Narration}}
+                </td>
+
+                <td style="text-align:left;width:230px;color:black">
+                  {{Record.LNarration}}
+                </td>
+
+              @if(Record.Amount >= 0.0)
+              {
+                  <td  [ngStyle]="OpeningRow(Record)" colspan="0" style="text-align:right;width:230px">
+                      {{Record.Amount.toFixed(no_of_decimals)}}
+                  </td>
+                  <td [ngStyle]="OpeningRow(Record)" colspan="0"   style="text-align:right;width:230px">
+
+                  </td>
+              }
+              @else
+              {
+                <td [ngStyle]="OpeningRow(Record)" colspan="0"   style="text-align:right;width:230px">
+
+                </td>
+                <td [ngStyle]="OpeningRow(Record)" colspan="0"   style="text-align:right;width:230px">
+                      {{(-Record.Amount).toFixed(no_of_decimals)}}
+                </td>
+              }
+              <td [ngStyle]="OpeningRow(Record)" colspan="0"  style="text-align: right;width:250px">
+                  @if(runningTotal > 0.0)
+                  {
+                    {{runningTotal.toFixed(no_of_decimals)}}
+                  }
+                  @else if (runningTotal === 0.0)
+                  {
+                        0.00.toFixed(no_of_decimals)
+                  }
+                  @else
+                  {
+                    {{(-runningTotal).toFixed(no_of_decimals)}}Cr
+                }
+              </td>
+
+                <!--<td colspan="0"  style="text-align:right;width:250px">
+
+                    @if(runningTotal > 0.0)
+                    {
+                        {{runningTotal}} Dr
+                    }
+                    @else if (runningTotal === 0.0)
+                    {
+                          0.00
+                    }
+                    @else
+                    {
+                       {{-runningTotal}} Cr
+                    }
+                </td>-->
+            </tr>
+        </ng-template>
+
+  </p-table>
+ </div>
+<!--<div class="card">
+    <p-table [value]="generalLegerRecords" expandableRowGroups="true"  sortField="generalLegerRecords.Account1_Name" sortMode="single" dataKey="generalLegerRecords.Account1_Name" rowGroupMode="subheader" groupRowsBy="generalLegerRecords.Account1_Name" [tableStyle]="{'min-width': 'full'}">
+        <ng-template #header>
+            <tr>
+
+             @for (col of colsGeneralLedger; track ['field'])
+              {
+               @if((!col.hide) && (col.field !== 'Account1_Name'))
+                {
+                  @if ( col.headerText !== '')
+                  {
+                    @if(col.field !== 'Account2_Name')
+                    {
+                        <th  style= " border-top: 0px solid rgb(24,93,150); color: red; font-weight: bold; width:200px ">{{col.headerText}}</th>
+                    }
+                    @else
+                    {
+                       <th  style= " border-top: 0px solid rgb(24,93,150); color: red; font-weight: bold; width:200px  ">{{col.headerText}}</th>
+                    }
+
+                  }
+                  @else
+                  {
+                    <th style="width:200px">{{col.field}}</th>
+                  }
+                }
+              }
+            </tr>
+        </ng-template>
+        <ng-template #groupheader let-Record let-rowIndex="rowIndex" let-expanded="expanded">
+            <tr>
+                <td colspan="5">
+                    <button style="font-weight: bold; border-top: 2px solid rgb(182, 37, 68); color: black; font-weight: bold;"
+                        type="button"
+                        pButton
+                        pRipple
+                        [pRowToggler]="Record.Account1_Name"
+                        text
+                        rounded
+                        plain
+                        class="mr-2"
+                        [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'">
+                    </button>
+                    <img
+                        [alt]="Record.Account1_Name"
+                        src=""
+                        width="0"
+                        style=" font-weight: bold; border-top: 3px solid
+                        rgb(23, 99, 89); color: rgb(167, 4, 12); font-weight: bold;vertical-align: middle; display: inline-block" />
+                    <span class="font-bold ml-2">{{Record.Account1_Name}}</span>
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template #groupfooter let-Record>
+            <tr style = "border-top: 0px solid rgb(24,93,150); color: red; font-weight: bold;" class="p-rowgroup-footer">
+                <td colspan="6" style="text-align: right">Sub Total</td>
+                <td style="text-align: right">{{calculateCustomerTotaldr(Record.Account1_Name)}}</td>
+                <td style="text-align: right" >{{calculateCustomerTotalcr(Record.Account1_Name)}}</td>
+                <td style="text-align: right" >{{calculateCustomerTotaldr(Record.Account1_Name)-calculateCustomerTotalcr(Record.Account1_Name)}}</td>
+            </tr>
+        </ng-template>
+        <ng-template   #expandedrow let-Record>
+            <tr  style = "border-bottom: 2px solid white; color: rgb(24, 177, 156); ">
+               <td width="150px"  >
+                    {{Record.Account1_Name}}
+                </td>
+              <td width="200px"   >
+                  {{Record.VoucherNo}}
+
+                </td>
+                <td width="150px"  >
+                     {{ Record.VoucherDate}}
+                </td>
+                <td width="150px"  >
+                    {{Record.Account2_Name}}
+                </td>
+                <td width="150px">
+                    {{Record.Narration}}
+                </td>
+                  <td width="150px">
+                    {{Record.LNarration}}
+                </td>
+                @if(Record.Amount >= 0.0)
+                {
+                    <td colspan="2" width="200px" style="text-align: right">
+                        {{Record.Amount}}
+                    </td>
+                     <td>
+                    </td>
+                }
+                @else
+                {
+                   <td>
+                    </td>
+                     <td colspan="2" width="200px" style="text-align: right">
+                        {{-Record.Amount}}
+                    </td>
+                }
+                <td colspan="2" width="340px" style="text-align: right">
+                    {{Record.Amount}}
+                    @if(Record.Amount >= 0.0)
+                    {
+                        Dr
+                    }
+                    @else
+                    {
+                        Cr
+                    }
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+-->
+<!--<div class="ag- theme-quartz" class="ag-theme-alpine" style="height: 700px; width: 1600px;">
+      <ag-grid-angular
+        style="width: 100%; height: 100%;"
+        [rowData]="accounts"
+        [columnDefs]="colDefs"
+        [defaultColDef]="defaultColDef"
+        (gridReady)="onGridReady($event)"
+        (gridSizeChanged)="onGridSizeChanged($event)"
+        >
+
+      </ag-grid-angular>
+    </div>
+  -->
+  <!--<div class="ag- theme-quartz" class="ag-theme-alpine" style="height: 700px; width: 1600px;">
+      <ag-grid-angular
+        style="width: 100%; height: 100%;"
+         class="ag-theme-quartz"
+        [gridOptions]="gridOptions"
+        [rowData]="generalLegerRecords"
+        [columnDefs]="colDefsgeneralLedger"
+        [defaultColDef]="defaultColDef"
+        (gridReady)="onGridReady($event)"
+        (gridSizeChanged)="onGridSizeChanged($event)"
+        >
+
+      </ag-grid-angular>
+    </div>
+
+    <ejs-grid [dataSource]="generalLegerRecords" [allowGrouping]="true" [groupSettings]="groupOptions">
+  <e-columns>
+    <e-column *ngFor="let col of colsGeneralLedger" [field]="col.field" [headerText]="col.headerText" [textAlign]="col.textAlign" [width]="col.width" [format]="col.format">
+    </e-column>
+  </e-columns>
+</ejs-grid>
+-->

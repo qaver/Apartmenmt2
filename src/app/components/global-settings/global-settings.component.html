@@ -1,0 +1,44 @@
+<div>
+  <h1>Global Settings</h1>
+  <br>
+    <label for="url">url:</label>
+     <input style = "width:350px" list="urls" type="url" id="url" [(ngModel)]="globalsettingsService.globalSetting.url" name="url">
+    <datalist  id="urls" display="chip"   [style]="{'width':'350px'}">
+
+        <option>https://apartment-qqmw.onrender.com</option>
+        <option>https://apartment2-xyx3.onrender.com</option>
+        <option>https://apartment-turso.onrender.com</option>
+  </datalist>
+  <br>
+  <!-- <p></p> -->
+   <br>
+  <input type="checkbox" [checked]="globalsettingsService.getUseLocalDatabase()" name="UseLocalDatabase" id="UseLocalDatabase" value="UseLocalDatabase"
+  (click)="onClickUseLocalDatabase($event)" >
+  <label for="UseLocalDatabase">Use Local database</label><br>
+  <br>
+  <input type="checkbox" [checked]="globalsettingsService.getUseVoiceCommand()" name="UseVoiceCommand" id="UseVoiceCommand" value="UseVoiceCommand"
+  (click)="onClickUseVoiceCommand($event)" >
+  <label for="UseVoiceCommand">Use voice command</label><br>
+  <br>
+  <!--<input type="checkbox" [checked]="globalsettingsService.getUseSQLServerDatabase()" name="UseSQLServerDatabase" id="UseSQLServerDatabase" value="UseSQLServerDatabase"
+  (click)="onClickUseSQLServerDatabase($event)" >
+  <label for="UseSQLServerDatabase">UseSQLServerDatabase</label><br>
+  <br>
+  <br>
+  <input type="checkbox" [checked]="globalsettingsService.getUseFetchCommand()" name="UseFetchCommand" id="UseFetchCommand" value="UseFetchCommand"
+  (click)="onClickUseUseFetchCommand($event)" >
+  <label for="UseFetchCommand">UseUseFetchCommand</label><br>
+  <br>
+  <br>
+  <span><label>DatabaseName   :</label></span>''
+  <select name="DatabaseName" id="DatabaseName"  (change)="onSelectDatabaseName($event)">
+    <option value="heroes">Heroes</option>
+    <option value="heroes2">Heroes2</option>
+  </select>
+  <br>
+  <br>-->
+</div>
+<!--<div>
+  <button class="Back" routerLink="../transaction">Transaction</button>
+</div>
+-->

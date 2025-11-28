@@ -1,0 +1,11 @@
+{
+  "appId": "com.pct.com",
+  "appName": "apartmentaccounts",
+  "bundledWebRuntime": false,
+  "webDir": "dist/aparmtment_1/browser",
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 0
+    }
+  }
+}

@@ -1,0 +1,100 @@
+<theme-switcher />
+<!-- <div class="card">
+    <p-treetable [value]="files" [scrollable]="true" [tableStyle]="{'min-width':'50rem'}">
+        <ng-template #header>
+            <tr>
+                <th>Code</th>
+                <th>Name</th>
+                <th>Type</th>
+            </tr>
+        </ng-template>
+        <ng-template #body let-rowNode let-rowData="rowData">
+            <tr [ttRow]="rowNode">
+                <td>
+                    <p-treetable-toggler [rowNode]="rowNode" />
+                    {{ rowData.name }}
+                </td>
+                <td> <p-treetable-toggler [rowNode]="rowNode" />
+                  {{ rowData.size }}
+                </td>
+                <td>{{ rowData.type }}</td>
+            </tr>
+        </ng-template>
+    </p-treetable>
+</div>
+-->
+  <!--<label for="new-hero">Account name: </label>
+  <input id="new-hero" #heroName />
+
+   (click) passes input value to add() and then clears the input-->
+ <!--<button type="button" [disabled]="false" id="AddAccountButton" class="AddAccountButton" routerLink="/account/{{-50001}}">
+    Add Account
+  </button>
+  -->
+  <div>
+  <app-messages></app-messages>
+  </div>
+  <br>
+
+<div id="accountstree" class="card">
+    <p-treetable [value]="accountnodes" scrollHeight="85vh" [style]="{'height':'100px'}"  [scrollable]="true" [tableStyle]="{'min-width':'50rem' } ">
+        <ng-template #header>
+            <tr>
+                <th>Code</th>
+                <th>Name</th>
+                <th>Type</th>
+            </tr>
+        </ng-template>
+        <ng-template #body let-rowNode let-rowData="rowData">
+            <tr [ttRow]="rowNode">
+                <td>
+                    <p-treetable-toggler [rowNode]="rowNode" />
+                    {{ rowData.Code }}
+                </td>
+                <td>
+                  {{ rowData.Name }}
+                </td>
+                <td>{{ rowData.AcType }}</td>
+                 @if (rowData.Id > 0)
+                {
+                 <li>
+                  <!--<a routerLink="/account/{{rowData.Id}}">
+                    <button> class="badge">Edit </button>
+
+                  </a>-->
+                  <a [routerLink]="['/account', rowData.Id]">
+                    <button [id]="'edit ' + rowData.Name" style="padding: 4px 8px; font-size: 14px;">Edit</button>
+                  </a>
+                   @if (rowData.Id > 17)
+                  {
+                    <a>
+                      <button  [id]="'delete ' + rowData.Name" style="padding: 4px 8px; font-size: 14px;" (click)="deleteAccount(rowData.Id)">Delete</button>
+                    </a>
+                  }
+                  </li>
+                }
+                @else
+                {
+                  <a [routerLink]="['/account', -50001,rowData.Name]">
+                    <button [id]="'add ' + rowData.Name" style="padding: 4px 8px; font-size: 14px;">Add</button>
+                  </a>
+                }
+            </tr>
+        </ng-template>
+    </p-treetable>
+</div>
+
+
+
+<!--<ul class="heroes">
+  @for (account of accounts; track account) {
+    <li>
+      <a routerLink="/account/{{account.Id}}">
+        <span class="badge">{{account.Id}}</span> {{account.Name}}
+      </a>
+      <button type="button" [disabled]="false" class="delete" title="delete account"
+      (click)="delete(account)">x</button>
+    </li>
+  }
+</ul>
+<button type="button" [disabled]="!globalsettingsService.getUseMemoryDatabase()" class="delete" title="delete hero"-->

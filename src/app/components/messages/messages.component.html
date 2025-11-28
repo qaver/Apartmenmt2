@@ -1,0 +1,28 @@
+@if (messageService.messages.length)
+{
+  <div>
+    <!-- <h2>Messages {{messageService.messages.length}}</h2>-->
+    @if (messageService.messages.length > 0)
+    {
+       <div> {{messageService.messages[messageService.messages.length-1]}} </div>
+    }
+    <!--<button type="button"
+      class="clear"
+    (click)="messageService.clear()" id="ClearMessages">Clear messages</button>
+    @for (message of messageService.messages; track message)
+    {
+      <div> {{message}} </div>
+  }-->
+  </div>
+}
+<div>
+ <!-- @if(messageService.voiceMessages.length > 0)
+    {
+    <h2>voice Messages {{messageService.voiceMessages.length}}</h2>
+  }
+-->
+  @for (voiceMessage of messageService.voiceMessages; track voiceMessage)
+  {
+    <div><span>{{voiceMessage}}</span></div>
+  }
+</div>

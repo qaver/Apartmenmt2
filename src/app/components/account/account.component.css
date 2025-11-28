@@ -1,0 +1,92 @@
+/* AccountComponent's private CSS styles */
+label {
+  color: #435960;
+  font-weight: bold;
+}
+input {
+  font-size: 1em;
+  padding: .5rem;
+}
+button {
+  margin-top: 20px;
+  margin-right: .5rem;
+  background-color: #eee;
+  padding: 1rem;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+button:hover {
+  background-color: #cfd8dc;
+}
+button:disabled {
+  background-color: #eee;
+  color: #ccc;
+  cursor: auto;
+}
+.form-control-sizing {
+  width: 300px; /* Set a fixed width */
+  padding: 10px;
+  font-size: 16px;
+}
+  .custom-input {
+    width: 250px;
+    flex-grow: 1; /* Allows the input field to take up remaining space */
+    padding: 10px;
+    border: 2px solid #555;
+    border-radius: 5px;
+    background-color: #f0f0f0;
+    color:black;
+    font-family: Arial, sans-serif;
+  }
+
+  .custom-input:focus {
+    background-color: lightyellow;
+    border-color: #007bff;
+    outline: none; /* Removes the default blue outline */
+  }
+.custom-label {
+  display: inline-block;
+  width:90px; /* Fixed width for all labels */
+  flex-shrink: 0; /* Prevents labels from shrinking */
+  text-align: left; /* Aligns the label text to the right */
+  padding-right: 10px; /* Adds space between the label and input */
+}
+
+.form-group input {
+  /*flex-grow: 1; /* Allows the input field to take up remaining space */
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width:50px;
+}
+.flex-fix2 {
+  width: 20%;
+  display: -webkit-box;      /* Older Android/iOS support */
+  display: -moz-box;         /* Firefox support */
+  display: -ms-flexbox;      /* IE10 support */
+  display: -webkit-flex;     /* Newer Webkit support */
+  display: flex;             /* Standard */
+
+  -webkit-box-pack: center;
+  -moz-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center; /* Centers horizontally */
+
+  -webkit-box-align: center;
+  -moz-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;     /* Centers vertically */
+}
+.accountbuttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width:350px;
+}
+.accountbutton{
+   display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color:rgb(24,93,150);
+  color:white;
+}
