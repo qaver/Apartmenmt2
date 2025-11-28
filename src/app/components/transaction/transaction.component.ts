@@ -264,10 +264,9 @@ receipt():void
 
   ngOnInit(): void {
 
-      return;
-    this.route.queryParams.subscribe(params =>
+      this.route.queryParams.subscribe(params =>
       {
-        console.log("param111 = ",params['action']);
+        console.log("param = ",params['action']);
           if (params['action'] === 'payment')
           {
             this.payment();
