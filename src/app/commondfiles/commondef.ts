@@ -100,6 +100,36 @@ export interface GeneralLedgerRecord
       TRType:string = "Dr";
       LNarration:string = "";
       ChequeNo:string = "";
+
+      static  enumJournalAccounts = {INVALIDACCOUNT:-501,OPENINGBALANCEACCOUNT:-500,JOURNALVOUCHERACCOUN:-450,DEBITACCOUNT:-400,
+        CREDITACCOUNT:-350,OPENINGSTOCKACCOUNT:-340,SHORTAGEOFSTOCKACCOUNT:-320,EXCESSOFSTOCKACCOUNT:-300,STOCKTRANSFERACCOUNT:-280};
+     static  enumTransactionType = {RECEIPT:0,PAYMENT:1,JOURNALVOUCHER:2,OPENINGBALANCE:3,DEBITNOTE:4,
+      CREDITNOTE:5,OPENINGSTOCK:6,SHORTAGEOFSTOCK:7,EXCESSOFSTOCK:8,STOCKTRANSFER:9};
+      static  GetJournalAccountName(TransactionType:number):string
+      {
+        switch (TransactionType)
+        {
+          case this.enumTransactionType.OPENINGBALANCE:
+            return "Op. Account";
+          case this.enumTransactionType.JOURNALVOUCHER:
+            return "JV Account";
+          case this.enumTransactionType.DEBITNOTE:
+            return "Db. Note";
+          case this.enumTransactionType.CREDITNOTE:
+            return  "Cr. Note";
+          case this.enumTransactionType.OPENINGSTOCK:
+            return  "Op. Stock";
+          case this.enumTransactionType.SHORTAGEOFSTOCK:
+            return  "Shortage Of Stock";
+          case this.enumTransactionType.EXCESSOFSTOCK:
+            return  "Excess Of Stock";
+          case this.enumTransactionType.STOCKTRANSFER:
+            return  "Stock Transfer Account";
+          default:
+            return "";
+        }
+      return "";
+    }
   }
 export class CodeName
 {

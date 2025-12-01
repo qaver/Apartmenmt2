@@ -48,6 +48,7 @@ export class globalSettings
   useVoiceCommand:boolean = false;
   useFetchCommand:boolean = true;
   databaseName:string = "heroes";
+  rowsInTransactionGrid = 50;
   public url:string =  "http://localhost:3000";
   clear():void
   {
@@ -55,6 +56,10 @@ export class globalSettings
     this.setUseVoiceCommand(true);
     this.setUseFetchCommand(true);
     this.setDatabaseName("heroes");
+    this.setRowsInTransactionGrid(10);
+    if (Capacitor.getPlatform().toLowerCase() !== 'web')
+       this.setRowsInTransactionGrid(50);
+
     this.setUrl("");
   }
 
@@ -67,6 +72,7 @@ export class globalSettings
           this.url = "http://183.82.96.120:5533";
           this.url = "https://apartment-qqmw.onrender.com"; // for sqllite cloud data base need to connect every 12 hours to keep it online
           this.url = "https://apartment-turso.onrender.com"; // running from either on render
+          this.rowsInTransactionGrid = 10;
 
        }
        else
@@ -79,6 +85,7 @@ export class globalSettings
   getUseFetchCommand():boolean{ return this.useFetchCommand};
   getDatabaseName():string{return this.databaseName};
   getUrl():string{return this.url};
+  getRowsInTransactionGrid():number {return this.rowsInTransactionGrid};
   getGlobalSettings():globalSettings
   {
     return this;
@@ -99,12 +106,16 @@ export class globalSettings
   setUrl(url:string):void{
     this.url = url;
   }
+  setRowsInTransactionGrid(rows:number):void{
+    this.rowsInTransactionGrid = rows;
+  }
 
-  setSettings(databaseName:string,useLocalDatabase:boolean,useVoiceCommand:boolean,useFetchCommand:boolean,url:string):void{
+  setSettings(databaseName:string,useLocalDatabase:boolean,useVoiceCommand:boolean,useFetchCommand:boolean,url:string,rows:number):void{
     this.setUseLocalDatabase(useLocalDatabase);
     this.setDatabaseName(databaseName);
     this.setUseVoiceCommand(useVoiceCommand);
     this.setUseFetchCommand(useFetchCommand);
+    this.setRowsInTransactionGrid(rows);
     this.setUrl(url);
 
   }
@@ -115,6 +126,7 @@ export class globalSettings
     this.setUseVoiceCommand(glbSettings.getUseVoiceCommand());
     this.setUseFetchCommand(glbSettings.getUseFetchCommand());
     this.setUrl(glbSettings.getUrl());
+    this.setRowsInTransactionGrid(glbSettings.getRowsInTransactionGrid());
   }
 };
 

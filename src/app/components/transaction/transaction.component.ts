@@ -1,3 +1,4 @@
+import { globalSettings } from './../../commondfiles/settings';
 import { ManageTransactionService} from '../../services/ManageTransactionService/manage-transaction-service';
 import { CommonModule } from '@angular/common';
 import { DataViewModule } from 'primeng/dataview';
@@ -21,6 +22,7 @@ import jsPDF from 'jspdf';
 import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
 import { FileOpener } from '@capacitor-community/file-opener';
 import { EmailService } from '../../services/emailservice/emailservice.service';
+import { GlobalsettingsService } from '../../services/globalsettings/globalsettings.service';
 
 //import { RouterLink, RouterModule } from '@angular/router';
 ///import { globalSettings } from '../common/settings';
@@ -91,11 +93,12 @@ export class TransactionComponent implements OnInit
 
  transactionType:number= this.TRASACTIONTYPE.TRANASACTONS;
  transactionTite:string = this.TRASACTIONTITLE.TRANASACTONS;
+ rowsInTransactionGrid = 10;
 
   constructor(private transactionService:ManageTransactionService,private messageService: MessageService,private accountsService:ManageAccountsService,
-    private emailService:EmailService,
+    private emailService:EmailService,private globalsettingsService:GlobalsettingsService,
     private route:ActivatedRoute, private platform: Platform) {
-
+      this.rowsInTransactionGrid = this.globalsettingsService.getRowsInTransactionGrid();
   }
 
  /*webAcsSelected:string = "";
@@ -330,6 +333,7 @@ receipt():void
     {
       this.headerGrid[1].fieldType1 = this.GRIDFIELDTYPE.LABEL;
       this.headerGrid[2].fieldType2 = this.GRIDFIELDTYPE.LABEL;
+      this.headerGrid[1].fieldValue1 = TransactionRecord.GetJournalAccountName(this.transactionType);
     }
    /* this.headerGrid[0].col1 = this.getNextVoucherNo();
     this.headerGrid[0].col3 = this.getCurrentDate();
@@ -347,7 +351,7 @@ receipt():void
 
     this.bodyGrid = [];
 
-    for (let i =0 ; i < 10;++i)
+    for (let i =0 ; i < this.rowsInTransactionGrid;++i)
       this.bodyGrid.push({sno:i+1, account_Name: '', amount: 0,drcr: '',narration: '',rctpmt:rctpmt});
 
       if(getNextVoucherNo)
@@ -452,7 +456,7 @@ receipt():void
        {
            this.bodyGrid.push({sno:i+1, account_Name:transactions[i].Account1_Name, amount: transactions[i].Amount,drcr: transactions[i].TRType,narration: transactions[i].LNarration,rctpmt:rctpmt});
        }
-       for (let i =transactions.length ; i < 10;++i)
+       for (let i =transactions.length ; i < this.rowsInTransactionGrid;++i)
        {
           this.bodyGrid.push({sno:i+1, account_Name: '', amount: 0,drcr: '',narration: '',rctpmt:rctpmt});
        }

@@ -16,6 +16,7 @@ export class GlobalsettingsService {
   getUseFetchCommand():boolean{ return this.globalSetting.getUseFetchCommand()};
   getDatabaseName():string{return this.globalSetting.getDatabaseName()};
   getUrl():string{return this.globalSetting.getUrl()};
+  getRowsInTransactionGrid():number{return this.globalSetting.getRowsInTransactionGrid()};
   getGlobalSettings():globalSettings
   {
     return this.globalSetting;
@@ -38,13 +39,17 @@ export class GlobalsettingsService {
   setUrl(url:string):void{
     this.globalSetting.setUrl(url);
   }
-  ChangeSettings(databaseName:string,useLocalDatabase:boolean,useVoiceCommand:boolean,useFetchCommand:boolean,url:string):void
+  setRowsInTransactionGrid(rows:number):void{
+    this.globalSetting.setRowsInTransactionGrid(rows);
+  }
+  ChangeSettings(databaseName:string,useLocalDatabase:boolean,useVoiceCommand:boolean,useFetchCommand:boolean,url:string,rows:number):void
   {
     this.setDatabaseName(databaseName);
     this.setUseLocalDatabase(useLocalDatabase);
     this.setUseVoiceCommand(useVoiceCommand);
     this.setUseFetchCommand(useFetchCommand);
     this.setUrl(url);
+    this.setRowsInTransactionGrid(rows);
   }
 
   clear():void
