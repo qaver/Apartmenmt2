@@ -18,6 +18,33 @@ export class ManageTransactionService {
     private globalsettingsService:GlobalsettingsService,
     private http: HttpClient,
     private messageService: MessageService,private sqllite:sqliteDatabaseService) { }
+
+     async getLastVouhcerNoFromDatabase(voucherPrefix:string): Promise<string>
+    {
+        let url:string = "http://localhost:3000/api/data/transaction/lastvoucher/"+voucherPrefix;
+
+        if (this.globalsettingsService.getUrl() != "")
+          url = this.globalsettingsService.getUrl()  + "/api/data/transaction/lastvoucher/"+voucherPrefix;
+        console.log("get voucher ",url,{
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*'
+            // Add any additional headers if needed
+          }});
+        const data = await fetch(url);
+        const dataJSon = await data.json();
+        let msg =  <ErrorMsg> dataJSon;
+
+        if (msg.Id === -155)
+        {
+          this.messageService.add(`Transaction:: Failed to get last voucherNo.${voucherPrefix}. ${msg.errMsg}`,{Id:1,Msg:voucherPrefix});
+          return "";
+        }
+
+        console.log(msg.errMsg);
+        return msg.errMsg;
+      }
     async getVoucherFromDatabase(voucherNo:string): Promise<TransactionRecord[]>
     {
 

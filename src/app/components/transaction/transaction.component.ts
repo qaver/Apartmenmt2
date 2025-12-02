@@ -344,7 +344,14 @@ receipt():void
 
     this.resetChequeNoField();
     if (getNextVoucherNo)
+    {
       this.headerGrid[0].fieldValue1 = this.getNextVoucherNo();
+      this.transactionService.getLastVouhcerNoFromDatabase(this.getVoucherPrefix()).then(async (voucherNo:string) =>
+      {
+         this.headerGrid[0].fieldValue1 = voucherNo + " ";
+         this.headerGrid[0].fieldValue1 = this.headerGrid[0].fieldValue1.trim();
+      });
+    }
 
     this.headerGrid[0].fieldValue2 = this.getCurrentDate(); //vdate
     this.headerGrid[1].fieldValue2 = this.getCurrentDate(); // due date
@@ -354,8 +361,8 @@ receipt():void
     for (let i =0 ; i < this.rowsInTransactionGrid;++i)
       this.bodyGrid.push({sno:i+1, account_Name: '', amount: 0,drcr: '',narration: '',rctpmt:rctpmt});
 
-      if(getNextVoucherNo)
-        this.getVoucher(false);
+     // if(getNextVoucherNo)
+      ///  this.getVoucher(false);
   }
   getAccounts(accountType:string)
   {
@@ -369,7 +376,6 @@ receipt():void
   }
   async printVoucherToPDF(fileName:string) :Promise<string>
   {
-
      let msg:string = `Recieved  payment of ${this.bodyGrid[0].amount} from ${this.bodyGrid[0].account_Name} for the month of ${ this.headerGrid[2].fieldValue1} on ${this.headerGrid[0].fieldValue2}`;
      const doc = new jsPDF('portrait', 'pt', 'a4');
      doc.setFontSize(14);
