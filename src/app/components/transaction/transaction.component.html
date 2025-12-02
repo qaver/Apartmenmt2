@@ -4,10 +4,10 @@
   <div id="listoftransactions">
     <button type="button" [disabled]="false" id="receipt" class="TransactionButton" (click)="receipt()">Receipt</button><br>
     <button type="button" [disabled]="false" id="payment" class="TransactionButton" (click)="payment()">Payment</button><br>
-    <button type="button" [disabled]="false" id="openingvoucher" class="TransactionButton" (click)="openingBalance()">Opening Balance</button><br>
     <button type="button" [disabled]="false" id="journalvoucher" class="TransactionButton" (click)="journalVoucher()">Journal Voucher </button><br>
     <button type="button" [disabled]="false" id="debitnote" class="TransactionButton" (click)="debitNote()">Debit Note</button><br>
     <button type="button" [disabled]="false" id="creditnote" class="TransactionButton" (click)="creditNote()">Credit Note</button><br>
+    <button type="button" [disabled]="false" id="openingvoucher" class="TransactionButton" (click)="openingBalance()">Opening Balance</button><br>
 </div>
 }
 @else
@@ -41,11 +41,12 @@
 <div id="transaction"></div>
 <button type="button" [disabled]="false" id="exit" class="btnTransction" (click)="transaction()">Exit</button>
 <button type="button" [disabled]="false" id="getvoucher" class="btnTransction" (click)="getVoucher(false,false)">Get</button>
-<button type="button" [disabled]="false" id="addvoucher" class="btnTransction" (click)="addVoucher()">Add</button>
-<button type="button" [disabled]="false" id="editvoucher" class="btnTransction" (click)="editVoucher()">Edit</button>
+<button type="button" [disabled]="false" id="addvoucher" class="btnTransction" (click)="saveVoucher()">Save</button>
 <button type="button" [disabled]="false" id="deletevoucher" class="btnTransction" (click)="deleteVoucher()">Delete</button>
 <button type="button" [disabled]="false" id="deletevoucher" class="btnTransction" (click)="printVoucher()">Print</button>
+<button type="button" [disabled]="false" id="editvoucher" class="btnTransction" (click)="emailVoucher()">Email</button>
 <button type="button" [disabled]="false" id="copyvoucher" class="btnTransction" (click)="CopyVoucher()">Copy</button>
+
 
 @if(showCopyVoucherList)
 {

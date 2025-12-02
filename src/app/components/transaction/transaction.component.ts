@@ -2,9 +2,9 @@ import { globalSettings } from './../../commondfiles/settings';
 import { ManageTransactionService} from '../../services/ManageTransactionService/manage-transaction-service';
 import { CommonModule } from '@angular/common';
 import { DataViewModule } from 'primeng/dataview';
-import { Component, OnInit,ViewChildren, QueryList , ElementRef } from '@angular/core';
+import { Component, OnInit,ViewChildren, QueryList , ElementRef, createPlatform } from '@angular/core';
 import { ManageAccountsService } from '../../services/ManageAccountsService/manageaccounts.service';
-import { Account, CodeName, CommonFileFunction, ErrorMsg, TransactionRecord,VoucherList,enumError,enumErrorText } from '../../commondfiles/commondef';
+import { Account, CodeName, CommonFileFunction, ErrorMsg, TransactionRecord,VoucherList,enumError,enumErrorText,normalizedJV } from '../../commondfiles/commondef';
 import { TreeTableModule } from "primeng/treetable";
 import { ContextMenuModule } from "primeng/contextmenu";
 import { Table, TableModule } from "primeng/table";
@@ -83,6 +83,7 @@ export class TransactionComponent implements OnInit
   bodyGrid: bodyGridType[] = [];
   bodyCols: any[] = [];
   prevVoucherNo:string = "";
+  newVoucher:boolean = true;
   copyVoucherList:VoucherList[]= [];
   showCopyVoucherList:boolean = false;
 
@@ -338,6 +339,7 @@ receipt():void
   }
   clearGrid(getNextVoucherNo:boolean)
   {
+      this.newVoucher = true;
       let voucherNo = "";
      ///  this.prevVoucherNo = "";
       let rctpmt:boolean = this.isRctPmtType();
@@ -464,6 +466,7 @@ receipt():void
   }
    async getVoucher(print:boolean,copyVoucher:boolean)
   {
+     this.newVoucher = true;
      this.prevVoucherNo = this.headerGrid[0].fieldValue1;
 
      let sOldVoucehrNo = this.headerGrid[0].fieldValue1;
@@ -474,6 +477,7 @@ receipt():void
 
      let rctpmt:boolean = this.isRctPmtType();
      let returnValue = false;
+     let totalAmount:number = 0;
      this.transactionService.getVoucherFromDatabase(voucherNo).then(async (transactions: TransactionRecord[]) =>
      {
        this.clearGrid(false);
@@ -487,10 +491,47 @@ receipt():void
           this.headerGrid[2].fieldValue1 = transactions[0].Narration;
           this.headerGrid[2].fieldValue2 = transactions[0].ChequeNo;
           this.resetChequeNoField();
+          if(!copyVoucher)
+          {
+            this.newVoucher = false;
+          }
        }
+      let JV:normalizedJV = {debitCount:0,creditCount:0,debitAccountName:"",creditAccountName:""};
+      let normalizedVoucher = false;
        for (let i =0 ; i < transactions.length;++i)
        {
            this.bodyGrid.push({sno:i+1, account_Name:transactions[i].Account1_Name, amount: transactions[i].Amount,drcr: transactions[i].TRType,narration: transactions[i].LNarration,rctpmt:rctpmt});
+           if(!rctpmt)
+           {
+              if(transactions[i].TRType.toLowerCase() == "cr")
+              {
+                  JV.creditCount++;
+                  JV.creditAccountName = transactions[i].Account2_Name;
+              }
+              else
+              {
+
+                  JV.debitCount++;
+                  JV.debitAccountName = transactions[i].Account2_Name;
+
+              }
+              totalAmount += transactions[i].Amount;
+           }
+       }
+       if (!rctpmt)
+       {
+          console.log(JV);
+          if (JV.creditCount === 0)
+          {
+              this.headerGrid[1].fieldValue1 = TransactionRecord.GetJournalAccountName(this.transactionType);
+              this.bodyGrid.push({sno:transactions.length, account_Name: JV.debitAccountName, amount:totalAmount,drcr: 'Cr',narration: '',rctpmt:rctpmt});
+          }
+          else  if (JV.debitCount === 0)
+          {
+              this.headerGrid[1].fieldValue1 = TransactionRecord.GetJournalAccountName(this.transactionType);
+              this.bodyGrid.push({sno:transactions.length, account_Name:JV.creditAccountName, amount:totalAmount,drcr: 'Dr',narration: '',rctpmt:rctpmt});
+          }
+
        }
        for (let i =transactions.length ; i < this.rowsInTransactionGrid;++i)
        {
@@ -540,7 +581,7 @@ receipt():void
     }
     return false;
   }
-  validateVoucher(voucherNo:string,voucherDate:string,dueDate:string,account2_Name:string,chequeNo:string,rcpmt:boolean,errMsg:ErrorMsg):boolean
+  validateVoucher(voucherNo:string,voucherDate:string,dueDate:string,account2_Name:string,chequeNo:string,rcpmt:boolean,JV:normalizedJV,errMsg:ErrorMsg):boolean
   {
     if (voucherNo === "")
     {
@@ -572,24 +613,37 @@ receipt():void
         return false;
     }
     let voucherPrefix:string = this.getVoucherPrefix();
+    let norlmaizedJv:boolean = false;
     if ((voucherNo.startsWith("JRV-")) ||(voucherNo.startsWith("DRV-"))||(voucherNo.startsWith("CRV-")))
     {
       let amountDr:number = 0.0;
       let amountCr:number = 0.0;
+      JV.creditCount = 0;
+      JV.debitCount = 0;
         for (let i = 0 ; i  < this.bodyGrid.length;++i)
         {
           if (this.bodyGrid[i].account_Name === "")
             continue;
           if (this.bodyGrid[i].drcr.toLowerCase() === "cr")
+          {
             amountCr += Number(this.bodyGrid[i].amount);
+            JV.creditCount++;
+            JV.creditAccountName = this.bodyGrid[i].account_Name;
+          }
           else
+          {
             amountDr += Number(this.bodyGrid[i].amount);
+            JV.debitCount++;
+            JV.debitAccountName = this.bodyGrid[i].account_Name;
+          }
         }
         if (amountDr != amountCr)
         {
            errMsg.SetError(enumError.DEBITSCREDITSNOTEQUAL,enumErrorText.DEBITSCREDITSNOTEQUAL);
-           errMsg.errMsg.replace("${DEBITAMOUNT}",amountDr.toString());
-           errMsg.errMsg.replace("${CREDITAMOUNT}",amountCr.toString());
+           console.log(errMsg.errMsg);
+           errMsg.errMsg = errMsg.errMsg.replace("${DEBITAMOUNT}",amountDr.toString());
+           errMsg.errMsg = errMsg.errMsg.replace("${CREDITAMOUNT}",amountCr.toString());
+          console.log(errMsg.errMsg);
           return false;
         }
     }
@@ -625,17 +679,39 @@ receipt():void
     }
     let narration = this.headerGrid[2].fieldValue1.trim();
     let chequeNo = this.headerGrid[2].fieldValue2.trim();
+    let JV:normalizedJV = {debitCount:0,creditCount:0,debitAccountName:"",creditAccountName:""};
+    let rctpmt:boolean = this.isRctPmtType();
+    let normalizedVoucher = false;
 
-     if(!this.validateVoucher(voucherNo,voucherDate,dueDate,account2_Name,chequeNo,this.isRctPmtType(),errMsg))
-     {
+    if(!this.validateVoucher(voucherNo,voucherDate,dueDate,account2_Name,chequeNo,rctpmt,JV,errMsg))
+    {
          return [];
-     }
+    }
+    if(!rctpmt)
+    {
+        if (JV.creditCount === 1)
+        {
+            normalizedVoucher = true;
+            account2_Name = JV.creditAccountName.toLowerCase();
+        }
+        else  if (JV.debitCount === 1)
+        {
+            normalizedVoucher = true;
+            account2_Name = JV.debitAccountName.toLowerCase();
+        }
+    }
+    console.log(JV,account2_Name);
      let transactions:TransactionRecord[] = [];
      for (let i = 0 ; i  < this.bodyGrid.length;++i)
      {
           this.bodyGrid[i].account_Name = this.bodyGrid[i].account_Name.trim();
            if (this.bodyGrid[i].account_Name === "")
               continue;
+            if (normalizedVoucher)
+            {
+                if (this.bodyGrid[i].account_Name.toLowerCase() === account2_Name)
+                  continue;
+            }
             let trasaction:TransactionRecord =
             {
               VoucherNo:voucherNo,
@@ -657,7 +733,7 @@ receipt():void
     }
      return transactions;
   }
-  addVoucher():boolean
+  saveVoucher():boolean
   {
     let errMsg:ErrorMsg  = new ErrorMsg();
 
@@ -675,7 +751,8 @@ receipt():void
       this.messageService.add(errMsg.errMsg,{Id:errMsg.Id,Msg:errMsg.errMsg});
       return false;
     }
-    this.transactionService.saveVoucherToDatabase(trasactions,false).then((errMsg:ErrorMsg) =>
+    console.log(trasactions);
+    this.transactionService.saveVoucherToDatabase(trasactions,!this.newVoucher).then((errMsg:ErrorMsg) =>
     {
         if (errMsg.Id !== -155)
         {
@@ -687,7 +764,11 @@ receipt():void
     } );
     return true;
   }
-  editVoucher()
+  emailVoucher()
+  {
+
+  }
+ /* editVoucher()
   {
     let errMsg:ErrorMsg  = new ErrorMsg();
     let trasactions:TransactionRecord[] = this.getDataFromGrid(errMsg);
@@ -715,7 +796,7 @@ receipt():void
 
     } );
     return true;
-  }
+  }*/
   deleteVoucher()
   {
     let errMsg:ErrorMsg  = new ErrorMsg();

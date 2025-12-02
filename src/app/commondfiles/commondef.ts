@@ -141,6 +141,13 @@ export class VoucherList
 {
   VoucherNo:string = "";
 };
+export class  normalizedJV
+{
+  debitCount:number=0;
+  creditCount:number= 0;
+  debitAccountName:string = "";
+  creditAccountName:string ="";
+};
 export const enumError = {EMPTYVOUCHERNO:-5000,EMPTYPAYMENTMODE:-4900,CHEQUENOEMPTY:-4800,
                           INVALIDVOUCHERDATE:-4700,INVALIDDUEDATE:-4600,
                           DEBITSCREDITSNOTEQUAL:-4500,EMPTYDATE:-4400,INVALIDDATE:-4300,
