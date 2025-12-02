@@ -86,10 +86,10 @@ export class TransactionComponent implements OnInit
   copyVoucherList:VoucherList[]= [];
   showCopyVoucherList:boolean = false;
 
-  TRASACTIONTYPE = {COPYTRANSACTIONS:-200,TRANASACTONS:-100,RECEIPT:0,PAYMENT:1,JOURNALVOUCHER:2,OPENINGBALANCE:3,DEBITNOTE:4,
+  TRASACTIONTYPE = {TRANASACTONS:-100,RECEIPT:0,PAYMENT:1,JOURNALVOUCHER:2,OPENINGBALANCE:3,DEBITNOTE:4,
     CREDITNOTE:5,OPENINGSTOCK:6,SHORTAGEOFSTOCK:7,EXCESSOFSTOCK:8,STOCKTRANSFER:9};
 
-  TRASACTIONTITLE = {COPYTRANSACTIONS:"Copy",TRANASACTONS:'Transactions',RECEIPT:'Receipt',PAYMENT:'Payment',JOURNALVOUCHER:'Journal Voucher',
+  TRASACTIONTITLE = {TRANASACTONS:'Transactions',RECEIPT:'Receipt',PAYMENT:'Payment',JOURNALVOUCHER:'Journal Voucher',
     OPENINGBALANCE:'Opening Balance',DEBITNOTE:'Debit Note',CREDITNOTE:'Credit Note',OPENINGSTOCK:'Opening Stock',
     SHORTAGEOFSTOCK:'Shortage Of Stock',EXCESSOFSTOCK:'Excess Of Stock',STOCKTRANSFER:'Stock Transfer'};
 
@@ -397,7 +397,7 @@ receipt():void
      this.transactionService.getVoucherList(voucherPrefix).then((vouchers: VoucherList[]) =>
      {
          this.copyVoucherList = vouchers;
-         console.log(this.copyVoucherList);
+        // console.log(this.copyVoucherList);
      });
   }
   async printVoucherToPDF(fileName:string) :Promise<string>
@@ -806,7 +806,7 @@ onPaymentModeSelected(event:any)
   }
 copyVocherNoChange()
 {
-  console.log(this.copyVoucherNo);
+ // console.log(this.copyVoucherNo);
   this.showCopyVoucherList = false;
   this.copyVoucherList = [];
   if (this.copyVoucherNo !== "")
