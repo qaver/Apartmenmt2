@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { DataViewModule } from 'primeng/dataview';
 import { Component, OnInit,ViewChildren, QueryList , ElementRef } from '@angular/core';
 import { ManageAccountsService } from '../../services/ManageAccountsService/manageaccounts.service';
-import { Account, CodeName, CommonFileFunction, ErrorMsg, TransactionRecord,enumError,enumErrorText } from '../../commondfiles/commondef';
+import { Account, CodeName, CommonFileFunction, ErrorMsg, TransactionRecord,VoucherList,enumError,enumErrorText } from '../../commondfiles/commondef';
 import { TreeTableModule } from "primeng/treetable";
 import { ContextMenuModule } from "primeng/contextmenu";
 import { Table, TableModule } from "primeng/table";
@@ -83,16 +83,21 @@ export class TransactionComponent implements OnInit
   bodyGrid: bodyGridType[] = [];
   bodyCols: any[] = [];
   prevVoucherNo:string = "";
+  copyVoucherList:VoucherList[]= [];
 
-  TRASACTIONTYPE = {TRANASACTONS:-100,RECEIPT:0,PAYMENT:1,JOURNALVOUCHER:2,OPENINGBALANCE:3,DEBITNOTE:4,
+  TRASACTIONTYPE = {COPYTRANSACTIONS:-200,TRANASACTONS:-100,RECEIPT:0,PAYMENT:1,JOURNALVOUCHER:2,OPENINGBALANCE:3,DEBITNOTE:4,
     CREDITNOTE:5,OPENINGSTOCK:6,SHORTAGEOFSTOCK:7,EXCESSOFSTOCK:8,STOCKTRANSFER:9};
 
-  TRASACTIONTITLE = {TRANASACTONS:'Transactions',RECEIPT:'Receipt',PAYMENT:'Payment',JOURNALVOUCHER:'Journal Voucher',
+  TRASACTIONTITLE = {COPYTRANSACTIONS:"Copy",TRANASACTONS:'Transactions',RECEIPT:'Receipt',PAYMENT:'Payment',JOURNALVOUCHER:'Journal Voucher',
     OPENINGBALANCE:'Opening Balance',DEBITNOTE:'Debit Note',CREDITNOTE:'Credit Note',OPENINGSTOCK:'Opening Stock',
     SHORTAGEOFSTOCK:'Shortage Of Stock',EXCESSOFSTOCK:'Excess Of Stock',STOCKTRANSFER:'Stock Transfer'};
 
  transactionType:number= this.TRASACTIONTYPE.TRANASACTONS;
  transactionTite:string = this.TRASACTIONTITLE.TRANASACTONS;
+ oldTrType:number = this.transactionType;
+ oldtrTitle:string = this.transactionTite;
+ copyVoucherNo:string = "";
+
  rowsInTransactionGrid = 10;
 
   constructor(private transactionService:ManageTransactionService,private messageService: MessageService,private accountsService:ManageAccountsService,
@@ -211,20 +216,38 @@ export class TransactionComponent implements OnInit
   }
  setTransactionType(trType:number,trTitle:string):void
  {
+    let oldVoucherPrefix = this.getVoucherPrefix();
+    this.oldTrType = this.transactionType;
+    this.oldtrTitle = this.transactionTite;
     this.transactionType = trType;
     this.transactionTite = trTitle;
-    this.setHeadings(trType);
-    this.clearGrid(true);
   //  this.headerGrid[0].fieldValue1 = this.getDefaultVoucherNo();
     if (trType === this.TRASACTIONTYPE.TRANASACTONS)
     {
+      console.log('copy vou tr');
+
       this.account1 = []
       this.account2= [];
+      this.copyVoucherList = [];
+      this.copyVoucherNo = "";
+      this.messageService.clear();
+    }
+    else if (trType ===  this.TRASACTIONTYPE.COPYTRANSACTIONS)
+    {
+        this.getVoucherList(oldVoucherPrefix);
     }
     else
     {
+      this.copyVoucherList = [];
+      this.setHeadings(trType);
+      this.clearGrid(true);
       this.getAccounts("account1");
       this.getAccounts("account2");
+      if (this.copyVoucherNo !== "")
+      {
+        this.getVoucher(false,true);
+      }
+        this.copyVoucherNo = "";
     }
  }
  getTransactionType():number
@@ -322,6 +345,7 @@ receipt():void
   clearGrid(getNextVoucherNo:boolean)
   {
       let voucherNo = "";
+       this.prevVoucherNo = "";
       let rctpmt:boolean = this.isRctPmtType();
       if ( this.headerGrid[0])
         voucherNo = this.headerGrid[0].fieldValue1;
@@ -372,6 +396,14 @@ receipt():void
         this.account1 = accounts;
       else
          this.account2 = accounts;
+     });
+  }
+   getVoucherList(voucherPrefix:string)
+  {
+     this.transactionService.getVoucherList(voucherPrefix).then((vouchers: VoucherList[]) =>
+     {
+         this.copyVoucherList = vouchers;
+         console.log(this.copyVoucherList);
      });
   }
   async printVoucherToPDF(fileName:string) :Promise<string>
@@ -436,12 +468,16 @@ receipt():void
       else
         this.messageService.addMsg('not yet implemented in web version.  File Name = '+fileName);
   }
-   async getVoucher(print:boolean)
+   async getVoucher(print:boolean,copyVoucher:boolean)
   {
      this.prevVoucherNo = this.headerGrid[0].fieldValue1;
 
      let sOldVoucehrNo = this.headerGrid[0].fieldValue1;
      let voucherNo =  this.getVoucherPrefix()  +sOldVoucehrNo;
+
+     if (copyVoucher)
+        voucherNo = this.copyVoucherNo;
+
      let rctpmt:boolean = this.isRctPmtType();
      let returnValue = false;
      this.transactionService.getVoucherFromDatabase(voucherNo).then(async (transactions: TransactionRecord[]) =>
@@ -498,7 +534,7 @@ receipt():void
   }
    printVoucher()
   {
-    this.getVoucher(true);
+    this.getVoucher(true,false);
     //this.printVoucherToPDF();
   }
   IsBankAccount(account2_Name:string):boolean
@@ -711,7 +747,10 @@ receipt():void
 
   }
 
-
+CopyVoucher()
+{
+  this.setTransactionType(this.TRASACTIONTYPE.COPYTRANSACTIONS,this.TRASACTIONTITLE.COPYTRANSACTIONS);
+}
 
   //onEnter(event: KeyboardEvent, ptable: Table, rowIndex: number, colIndex: number)
 resetChequeNoField()
@@ -751,9 +790,10 @@ onPaymentModeSelected(event:any)
       console.log("on complete voucher no");
       if (this.prevVoucherNo !== this.headerGrid[0].fieldValue1)
       {
-          this.getVoucher(false);
+          this.getVoucher(false,false);
       }
     }
+
    /* console.log('Edit complete:', event,this.headerGrid[0].fieldValue1);
 
     const editedRowData:headerGridType = event.data;
@@ -765,6 +805,11 @@ onPaymentModeSelected(event:any)
     // Here you would typically call a service to save the data to your backend
     // this.productService.updateProduct(editedRowData).subscribe();*/
   }
+copyVocherNoChange()
+{
+  console.log(this.copyVoucherNo);
+  this.setTransactionType(this.oldTrType,this.oldtrTitle);
+}
     /*this.tableData = [
       {
         firstname: "David",

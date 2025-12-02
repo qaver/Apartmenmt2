@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { GlobalsettingsService } from '../globalsettings/globalsettings.service';
-import {TransactionRecord,CodeName, ErrorMsg} from "../../commondfiles/commondef"
+import {TransactionRecord,CodeName, ErrorMsg, VoucherList} from "../../commondfiles/commondef"
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 
 import { Observable, OperatorFunction, concat, of } from 'rxjs';
@@ -126,7 +126,23 @@ export class ManageTransactionService {
 
         return await data.json() ?? <TransactionRecord[]>[];
       }
+      async getVoucherList(voucherPrefix:string): Promise<VoucherList[]>
+       {
+        let url:string = "http://localhost:3000/api/data/transaction/voucherlist/"+voucherPrefix;
+        //console.log(url);
+        if (this.globalsettingsService.getUrl() != "")
+          url = this.globalsettingsService.getUrl()  + "/api/data/transaction/voucherlist/"+voucherPrefix;
+        console.log("get Accounts ",url,{
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*'
+            // Add any additional headers if needed
+          }});
+        const data = await fetch(url);
 
+        return await data.json() ?? <VoucherList[]>[];
+      }
       async deleteVoucherFromDatabase(voucherNo:string): Promise<ErrorMsg>
       {
        let url:string = "http://localhost:3000/api/data/transaction/delete/"+voucherNo
