@@ -215,7 +215,7 @@ export class TransactionComponent implements OnInit
     this.transactionTite = trTitle;
     this.setHeadings(trType);
     this.clearGrid(true);
-    this.headerGrid[0].fieldValue1 = this.getDefaultVoucherNo();
+  //  this.headerGrid[0].fieldValue1 = this.getDefaultVoucherNo();
     if (trType === this.TRASACTIONTYPE.TRANASACTONS)
     {
       this.account1 = []
@@ -335,7 +335,7 @@ receipt():void
       this.headerGrid[2].fieldType2 = this.GRIDFIELDTYPE.LABEL;
       this.headerGrid[1].fieldValue1 = TransactionRecord.GetJournalAccountName(this.transactionType);
     }
-   /* this.headerGrid[0].col1 = this.getNextVoucherNo();
+   /* this.headerGrid[0].col1 = this.get NextVoucherNo();
     this.headerGrid[0].col3 = this.getCurrentDate();
     this.headerGrid[1].col1 = "";
     this.headerGrid[1].col3 = this.getCurrentDate();
@@ -345,7 +345,7 @@ receipt():void
     this.resetChequeNoField();
     if (getNextVoucherNo)
     {
-      this.headerGrid[0].fieldValue1 = this.getNextVoucherNo();
+     /// this.headerGrid[0].fieldValue1 = this.getNextVoucherNo();
       this.transactionService.getLastVouhcerNoFromDatabase(this.getVoucherPrefix()).then(async (voucherNo:string) =>
       {
          this.headerGrid[0].fieldValue1 = voucherNo + " ";

@@ -21,6 +21,8 @@ export class ManageTransactionService {
 
      async getLastVouhcerNoFromDatabase(voucherPrefix:string): Promise<string>
     {
+      if (voucherPrefix === "")
+        return "1";
         let url:string = "http://localhost:3000/api/data/transaction/lastvoucher/"+voucherPrefix;
 
         if (this.globalsettingsService.getUrl() != "")
