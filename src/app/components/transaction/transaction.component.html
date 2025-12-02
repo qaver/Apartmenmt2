@@ -10,20 +10,6 @@
     <button type="button" [disabled]="false" id="creditnote" class="TransactionButton" (click)="creditNote()">Credit Note</button><br>
 </div>
 }
-@else if(getTransactionType() === TRASACTIONTYPE.COPYTRANSACTIONS)
-{
-    <div>
-         <label class="custom-label" for="copyVoucherNo">Voucher List</label>
-          <input class="custom-input" [(ngModel)]="copyVoucherNo"  (change)="copyVocherNoChange()" list="copyVoucherNos" id="copyVoucherNo" name="copyVoucherNo" placeholder="Vouchers">
-
-          <datalist  id="copyVoucherNos"  [style]="{'width':'100%'}">
-              @for (voucher of copyVoucherList; track voucher)
-              {
-                <option>{{voucher.VoucherNo}}</option>
-              }
-           </datalist>
-      </div>
-}
 @else
 {
   <app-messages></app-messages>
@@ -60,6 +46,21 @@
 <button type="button" [disabled]="false" id="deletevoucher" class="btnTransction" (click)="deleteVoucher()">Delete</button>
 <button type="button" [disabled]="false" id="deletevoucher" class="btnTransction" (click)="printVoucher()">Print</button>
 <button type="button" [disabled]="false" id="copyvoucher" class="btnTransction" (click)="CopyVoucher()">Copy</button>
+
+@if(showCopyVoucherList)
+{
+    <div>
+         <label class="custom-label" for="copyVoucherNo">Voucher List</label>
+          <input class="custom-input" [(ngModel)]="copyVoucherNo"  (change)="copyVocherNoChange()" list="copyVoucherNos" id="copyVoucherNo" name="copyVoucherNo" placeholder="Vouchers">
+
+          <datalist  id="copyVoucherNos"  [style]="{'width':'100%'}">
+              @for (voucher of copyVoucherList; track voucher)
+              {
+                <option>{{voucher.VoucherNo}}</option>
+              }
+           </datalist>
+      </div>
+}
   <h2 style= "background-color: rgb(24,93,150);color:white;">{{getTransationTitle()}}</h2>
   <br>
     <p-table #myTab1 [value]="headerGrid"

@@ -84,6 +84,7 @@ export class TransactionComponent implements OnInit
   bodyCols: any[] = [];
   prevVoucherNo:string = "";
   copyVoucherList:VoucherList[]= [];
+  showCopyVoucherList:boolean = false;
 
   TRASACTIONTYPE = {COPYTRANSACTIONS:-200,TRANASACTONS:-100,RECEIPT:0,PAYMENT:1,JOURNALVOUCHER:2,OPENINGBALANCE:3,DEBITNOTE:4,
     CREDITNOTE:5,OPENINGSTOCK:6,SHORTAGEOFSTOCK:7,EXCESSOFSTOCK:8,STOCKTRANSFER:9};
@@ -94,8 +95,8 @@ export class TransactionComponent implements OnInit
 
  transactionType:number= this.TRASACTIONTYPE.TRANASACTONS;
  transactionTite:string = this.TRASACTIONTITLE.TRANASACTONS;
- oldTrType:number = this.transactionType;
- oldtrTitle:string = this.transactionTite;
+// oldTrType:number = this.transactionType;
+ ///oldtrTitle:string = this.transactionTite;
  copyVoucherNo:string = "";
 
  rowsInTransactionGrid = 10;
@@ -216,38 +217,31 @@ export class TransactionComponent implements OnInit
   }
  setTransactionType(trType:number,trTitle:string):void
  {
-    let oldVoucherPrefix = this.getVoucherPrefix();
-    this.oldTrType = this.transactionType;
-    this.oldtrTitle = this.transactionTite;
+    ///let oldVoucherPrefix = this.getVoucherPrefix();
+    //this.oldTrType = this.transactionType;
+   /// this.oldtrTitle = this.transactionTite;
     this.transactionType = trType;
     this.transactionTite = trTitle;
   //  this.headerGrid[0].fieldValue1 = this.getDefaultVoucherNo();
     if (trType === this.TRASACTIONTYPE.TRANASACTONS)
     {
-      console.log('copy vou tr');
-
       this.account1 = []
       this.account2= [];
       this.copyVoucherList = [];
       this.copyVoucherNo = "";
+      this.headerGrid[0].fieldValue1  = "";
       this.messageService.clear();
     }
-    else if (trType ===  this.TRASACTIONTYPE.COPYTRANSACTIONS)
+   /* else if (trType ===  this.TRASACTIONTYPE.COPYTRANSACTIONS)
     {
         this.getVoucherList(oldVoucherPrefix);
-    }
+    }*/
     else
     {
-      this.copyVoucherList = [];
       this.setHeadings(trType);
       this.clearGrid(true);
       this.getAccounts("account1");
       this.getAccounts("account2");
-      if (this.copyVoucherNo !== "")
-      {
-        this.getVoucher(false,true);
-      }
-        this.copyVoucherNo = "";
     }
  }
  getTransactionType():number
@@ -345,7 +339,7 @@ receipt():void
   clearGrid(getNextVoucherNo:boolean)
   {
       let voucherNo = "";
-       this.prevVoucherNo = "";
+     ///  this.prevVoucherNo = "";
       let rctpmt:boolean = this.isRctPmtType();
       if ( this.headerGrid[0])
         voucherNo = this.headerGrid[0].fieldValue1;
@@ -686,6 +680,7 @@ receipt():void
         if (errMsg.Id !== -155)
         {
             this.clearGrid(true);
+            this.prevVoucherNo = "";
             return true;
         }
          return false;
@@ -713,6 +708,7 @@ receipt():void
         if (errMsg.Id !== -155)
         {
            this.clearGrid(true);
+           this.prevVoucherNo = "";
            return true;
         }
         return false;
@@ -740,6 +736,7 @@ receipt():void
        if (errMsg.Id !== -155)
         {
             this.clearGrid(true);
+            this.prevVoucherNo = "";
             return;
         }
         return;
@@ -749,7 +746,9 @@ receipt():void
 
 CopyVoucher()
 {
-  this.setTransactionType(this.TRASACTIONTYPE.COPYTRANSACTIONS,this.TRASACTIONTITLE.COPYTRANSACTIONS);
+  this.showCopyVoucherList = true;
+  this.getVoucherList(this.getVoucherPrefix());
+ /// this.setTransactionType(this.TRASACTIONTYPE.COPYTRANSACTIONS,this.TRASACTIONTITLE.COPYTRANSACTIONS);
 }
 
   //onEnter(event: KeyboardEvent, ptable: Table, rowIndex: number, colIndex: number)
@@ -808,7 +807,14 @@ onPaymentModeSelected(event:any)
 copyVocherNoChange()
 {
   console.log(this.copyVoucherNo);
-  this.setTransactionType(this.oldTrType,this.oldtrTitle);
+  this.showCopyVoucherList = false;
+  this.copyVoucherList = [];
+  if (this.copyVoucherNo !== "")
+  {
+    this.getVoucher(false,true);
+  }
+  this.copyVoucherNo = "";
+  ///this.setTransactionType(this.oldTrType,this.oldtrTitle);
 }
     /*this.tableData = [
       {
