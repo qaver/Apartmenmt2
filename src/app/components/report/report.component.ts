@@ -4,7 +4,7 @@ import { globalSettings } from './../../commondfiles/settings';
 import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, ChangeDetectorRef, DOCUMENT, Inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 ///import { ReportServiceService, Car } from '../../services/reportservice/report-service.service';
-import { Account, CodeName, dateFunctions, enumError, enumErrorText, ErrorMsg, GeneralLedgerRecord,CommonFileFunction } from '../../commondfiles/commondef';
+import { Account, CodeName, dateFunctions, enumError, enumErrorText, ErrorMsg, GeneralLedgerRecord,CommonFileFunction, CommonCurrencyFunctions } from '../../commondfiles/commondef';
 import { ManageAccountsService } from '../../services/ManageAccountsService/manageaccounts.service';
 
 import { ExportCSVOptions, TableModule } from 'primeng/table';
@@ -191,6 +191,10 @@ export class ReportComponent  implements AfterViewInit
     { field: '"Account1_No',headerText:"account1_no",hide:true},
     { field: '"Account2_No',headerText:"account2 no",hide:true},
   ];
+  convertNumberToString(amount:number):string
+  {
+    return CommonCurrencyFunctions.convertNumberToString(amount,this.no_of_decimals);
+  }
   updateRunningTotalOld(amount:number,name: string)
   {
     ///console.log("update running total for ",name);
@@ -241,19 +245,19 @@ export class ReportComponent  implements AfterViewInit
       }
       this.groupBalance = this.currentDr-this.currentCr;
       if (this.groupBalance > 0.0)
-          this.groupBalancetext = this.groupBalance.toFixed(this.no_of_decimals);
+          this.groupBalancetext =  this.convertNumberToString(this.groupBalance) +'Dr';
         else if  (this.groupBalance === 0.0)
-            this.groupBalancetext = 0.0.toFixed(this.no_of_decimals);
+            this.groupBalancetext =  this.convertNumberToString(0.0);
         else
-          this.groupBalancetext = (-this.groupBalance).toFixed(this.no_of_decimals)+"Cr ";
+          this.groupBalancetext =  this.convertNumberToString(-this.groupBalance)+"Cr ";
 
         this.reportTotalBalance = this.reportTotalDr-this.reportTotalCr;
         if (this.reportTotalBalance > 0.0)
-            this.reportTotalBalanceText = this.reportTotalBalance.toFixed(this.no_of_decimals);
+            this.reportTotalBalanceText =  this.convertNumberToString(this.reportTotalBalance)+'Dr';
         else if  (this.reportTotalBalance === 0.0)
-            this.reportTotalBalanceText = 0.0.toFixed(this.no_of_decimals);
+            this.reportTotalBalanceText = this.convertNumberToString(0.0);
         else
-          this.reportTotalBalanceText = -(this.reportTotalBalance).toFixed(this.no_of_decimals)+"Cr"
+          this.reportTotalBalanceText =  this.convertNumberToString(-this.reportTotalBalance)+"Cr"
 
          ///console.log("update running total for ",name, " row = ",rowNo , "totals/", this.reportTotalDr, "/", this.reportTotalCr );
          /* if (this.generalLegerRecords.length > 0)
@@ -305,23 +309,23 @@ export class ReportComponent  implements AfterViewInit
 
 
        /// if (this.groupBalance > 0.0)
-        ///  this.groupBalancetext = this.groupBalance +"Dr";
+        ///  this.group Balancetext = this.groupBalance +"Dr";
         ///else if  (this.groupBalance === 0.0)
-        ///    this.groupBalancetext = "0.0";
+        ///    this.group Balancetext = "0.0";
         ///else
-          ///this.groupBalancetext = -this.groupBalance+"Cr ";
+          ///this.group Balancetext = -this.groupBalance+"Cr ";
 
 
        /* if (this.reportTotalBalance > 0.0)
-            this.reportTotalBalanceText = this.reportTotalBalance +"Dr";
+            this.report TotalBalanceText = this.reportTotalBalance +"Dr";
         else if  (this.reportTotalBalance === 0.0)
-            this.reportTotalBalanceText = "0.0";
+            this.report TotalBalanceText = "0.0";
         else
-          this.reportTotalBalanceText = -this.reportTotalBalance+"Cr"*/
+          this.report TotalBalanceText = -this.reportTotalBalance+"Cr"*/
          this.currentDr = 0.0;
          let  amount = this.groupDr;
          this.groupDr = 0.0;
-        return amount.toFixed(this.no_of_decimals);
+        return  this.convertNumberToString(amount);
        ///  return this.groupDr;
        /* if (this.generalLegerRecords) {
             for (let record of this.generalLegerRecords)
@@ -339,11 +343,11 @@ export class ReportComponent  implements AfterViewInit
                   }
                   this.groupBalance += record.Amount;
                   if (this.groupBalance > 0.0)
-                    this.groupBalancetext = this.groupBalance +"Dr";
+                    this.group Balancetext = this.groupBalance +"Dr";
                   else if  (this.groupBalance === 0.0)
-                      this.groupBalancetext = "0.0";
+                      this.group Balancetext = "0.0";
                   else
-                    this.groupBalancetext = -this.groupBalance+"Cr";
+                    this.group Balancetext = -this.groupBalance+"Cr";
 
                 }
             }
@@ -356,7 +360,7 @@ export class ReportComponent  implements AfterViewInit
          this.currentCr = 0.0;
          let  amount = this.groupCr;
          this.groupCr = 0.0;
-        return amount.toFixed(this.no_of_decimals);
+        return  this.convertNumberToString(amount);
     }
 
     calculateCustomerTotalGroupBalance(name: string)
@@ -838,7 +842,7 @@ export class ReportComponent  implements AfterViewInit
         if (data.section === 'body' && data.column.dataKey === 'balance')
         {
           runningBalance += rowData.debit - rowData.credit;
-          data.cell.text = [`$${runningBalance.toFixed(no_of_decimals)}`];
+          data.cell.text = [`$${runningBalance.to Fixed(no_of_decimals)}`];
         }
       },
       didDrawCell: (data) => {
@@ -899,7 +903,7 @@ export class ReportComponent  implements AfterViewInit
       doc.setFontSize(10);
       doc.setFont('helvetica', 'bold');
       // Position total relative to the end of the table
-      doc.text(`Ending Balance: $${subtotal.toFixed(no_of_decimals)}`, doc.internal.pageSize.getWidth() - 60, currentY + 10);
+      doc.text(`Ending Balance: $${subtotal.to Fixed(no_of_decimals)}`, doc.internal.pageSize.getWidth() - 60, currentY + 10);
 
       currentY += 20; // Add vertical spacing before the next account
     });
@@ -1040,7 +1044,7 @@ export class ReportComponent  implements AfterViewInit
                   currentBalance += amount;
                   groupDr += amount;
                 // Overwrite the cell's text content with the computed value
-                  data.cell.text = [`${amount.toFixed(this.no_of_decimals)}`];
+                  data.cell.text = [`${this.convertNumberToString(amount)}`];
                }
                else
                {
@@ -1056,7 +1060,7 @@ export class ReportComponent  implements AfterViewInit
                   currentBalance += amount;
                   groupCr += amount;
                   amount = -amount;
-                  data.cell.text = [`${amount.toFixed(this.no_of_decimals)}`];
+                  data.cell.text = [`${this.convertNumberToString(amount)}`];
                }
                else
                {
@@ -1068,12 +1072,11 @@ export class ReportComponent  implements AfterViewInit
                groupBalance += currentBalance;
                if( groupBalance < 0.0)
                {
-                let temp = -groupBalance;
-                  data.cell.text = [`${temp.toFixed(this.no_of_decimals)}Cr`];
+                  data.cell.text = [`${this.convertNumberToString(-groupBalance)}Cr`];
                }
                else  if( groupBalance > 0.0)
                {
-                   data.cell.text = [`${groupBalance.toFixed(this.no_of_decimals)}`];
+                   data.cell.text = [`${this.convertNumberToString(groupBalance)}Dr`];
                }
                currentBalance  = 0.0;
             }
@@ -1107,24 +1110,29 @@ export class ReportComponent  implements AfterViewInit
 
                     let targetCell1 = data.row.cells[6];
                     totalXPos += targetCell1.x + targetCell1.width; // Right edge of the column
-                    doc.text(`${groupDr.toFixed(this.no_of_decimals)}`,totalXPos,totalYPos,{ align: 'right' } );
+                    doc.text(`${this.convertNumberToString(groupDr)}`,totalXPos,totalYPos,{ align: 'right' } );
                     reportDr += groupDr;
 
                     targetCell1 = data.row.cells[7];
                     totalXPos += targetCell1.x + targetCell1.width; // Right edge of the column
-                    let temp = -groupCr;
-                    doc.text( `${temp.toFixed(this.no_of_decimals)}`,totalXPos,totalYPos, { align: 'right' });
+                    if (groupCr < 0)
+                      doc.text( `${this.convertNumberToString(-groupCr)}`,totalXPos,totalYPos, { align: 'right' });
+                    else
+                      doc.text( `${this.convertNumberToString(0.0)}`,totalXPos,totalYPos, { align: 'right' });
                     reportCr += groupCr;
 
                     targetCell1 = data.row.cells[8];
                     totalXPos += targetCell1.x + targetCell1.width; // Right edge of the column
                     if (groupBalance < 0)
                     {
-                      temp = -groupBalance;
-                      doc.text(`${temp.toFixed(this.no_of_decimals)}Cr`,totalXPos,totalYPos,{ align: 'right' });
+                      doc.text(`${this.convertNumberToString(-groupBalance)}Cr`,totalXPos,totalYPos,{ align: 'right' });
+                    }
+                    else if (groupBalance === 0)
+                    {
+                      doc.text(`${this.convertNumberToString(0.0)}`,totalXPos,totalYPos,{ align: 'right' });
                     }
                     else
-                       doc.text(`${groupBalance.toFixed(this.no_of_decimals)}`,totalXPos,totalYPos,{ align: 'right' });
+                       doc.text(`${this.convertNumberToString(groupBalance)}Dr`,totalXPos,totalYPos,{ align: 'right' });
                      reportBalance += groupBalance;
                   }
                   if ((this.generalLegerRecords.length > 0 ) && (typeRecords[data.row.index].RowNo == this.generalLegerRecords[this.generalLegerRecords.length-1].RowNo))
@@ -1140,22 +1148,24 @@ export class ReportComponent  implements AfterViewInit
                     totalXPos +=  targetCell.width;
                     let targetCell1 = data.row.cells[6];
                     totalXPos += targetCell1.x + targetCell1.width; // Right edge of the column
-                    doc.text(`${reportDr.toFixed(this.no_of_decimals)}`,totalXPos,totalYPos,{ align: 'right' });
+                    doc.text(`${this.convertNumberToString(reportDr)}`,totalXPos,totalYPos,{ align: 'right' });
 
                     targetCell1 = data.row.cells[7];
                     totalXPos += targetCell1.x + targetCell1.width; // Right edge of the column
-                    let temp = -reportCr;
-                    doc.text(`${temp.toFixed(this.no_of_decimals)}`,totalXPos,totalYPos,{ align: 'right' } );
+                    doc.text(`${this.convertNumberToString(-reportCr)}`,totalXPos,totalYPos,{ align: 'right' } );
 
                     targetCell1 = data.row.cells[8];
                     totalXPos += targetCell1.x + targetCell1.width; // Right edge of the column
                     if (reportBalance < 0.0)
                     {
-                      temp = -reportBalance;
-                      doc.text(`${temp.toFixed(this.no_of_decimals)}Cr`,totalXPos,totalYPos,{ align: 'right' });
+                      doc.text(`${this.convertNumberToString(-reportBalance)}Cr`,totalXPos,totalYPos,{ align: 'right' });
+                    }
+                    else if (reportBalance === 0.0)
+                    {
+                        doc.text(`${this.convertNumberToString(0.0)}`,totalXPos,totalYPos,{ align: 'right' });
                     }
                     else
-                       doc.text(`${reportBalance.toFixed(this.no_of_decimals)}`,totalXPos,totalYPos,{ align: 'right' });
+                       doc.text(`${this.convertNumberToString(reportBalance)}Dr`,totalXPos,totalYPos,{ align: 'right' });
                   }
              }
           }

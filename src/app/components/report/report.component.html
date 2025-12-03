@@ -197,8 +197,8 @@
         <ng-template pTemplate="footer">
             <tr style = "border-top: 0px solid rgb(24,93,150); color: red;background-color:white; font-weight:bolder;" >
                 <td colspan="6" style="text-align:right;width:230px">Report Total </td>
-                <td style="text-align:right;width:230px">{{reportTotalDr.toFixed(this.no_of_decimals)}}</td>
-                <td style="text-align:right;width:230px" >{{reportTotalCr.toFixed(this.no_of_decimals)}}</td>
+                <td style="text-align:right;width:230px">{{convertNumberToString(reportTotalDr)}}</td>
+                <td style="text-align:right;width:230px" >{{convertNumberToString(reportTotalCr)}}</td>
                 <td style="text-align:right;width:250px" >{{reportTotalBalanceText}}</td>
             </tr>
         </ng-template>
@@ -231,7 +231,7 @@
               @if(Record.Amount >= 0.0)
               {
                   <td  [ngStyle]="OpeningRow(Record)" colspan="0" style="text-align:right;width:230px">
-                      {{Record.Amount.toFixed(no_of_decimals)}}
+                      {{convertNumberToString(Record.Amount)}}
                   </td>
                   <td [ngStyle]="OpeningRow(Record)" colspan="0"   style="text-align:right;width:230px">
 
@@ -243,21 +243,22 @@
 
                 </td>
                 <td [ngStyle]="OpeningRow(Record)" colspan="0"   style="text-align:right;width:230px">
-                      {{(-Record.Amount).toFixed(no_of_decimals)}}
+                      {{(convertNumberToString(-Record.Amount))}}
                 </td>
               }
               <td [ngStyle]="OpeningRow(Record)" colspan="0"  style="text-align: right;width:250px">
                   @if(runningTotal > 0.0)
                   {
-                    {{runningTotal.toFixed(no_of_decimals)}}
+                    {{convertNumberToString(runningTotal)}}Dr
+
                   }
                   @else if (runningTotal === 0.0)
                   {
-                       {{runningTotal.toFixed(no_of_decimals)}}
+                       {{convertNumberToString(runningTotal)}}
                   }
                   @else
                   {
-                    {{(-runningTotal).toFixed(no_of_decimals)}}Cr
+                    {{convertNumberToString(-runningTotal)}}Cr
                 }
               </td>
 

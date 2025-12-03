@@ -239,6 +239,19 @@ export class CommonFileFunction
       return `${fileName}${year}${month}${day}${hours}${minutes}${seconds}.pdf`;
     }
 }
+export class CommonCurrencyFunctions
+{
+  static convertNumberToString(amount:number,noOfDecimals:number):string
+  {
+
+      const options = {
+      minimumFractionDigits:noOfDecimals,
+      maximumFractionDigits:noOfDecimals
+    };
+   const formatter = new Intl.NumberFormat('en-IN', options);
+    return formatter.format(amount);
+  }
+}
 /*export class ItemFlatNode {
   name: string;
   level: number;
