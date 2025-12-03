@@ -68,6 +68,7 @@
                     [scrollable]="false"
                     showGridlines
                     scrollHeight="400px"
+                    class="custom-height-table"
                     (onEditComplete)="onEditComplete($event)"
     >
           <ng-template pTemplate="header">
@@ -100,10 +101,10 @@
                           }
                           @else
                           {
-                            <input pInputText type="text" [(ngModel)]="headerRow.fieldValue1" />
+                            <input pInputText type="text" [(ngModel)]="headerRow.fieldValue1" style="height:25px;" />
                           }
                         </ng-template>
-                        <ng-template pTemplate="output">
+                        <ng-template pTemplate="output"  >
                             {{headerRow.fieldValue1}}
                         </ng-template>
                     </p-cellEditor>
@@ -121,11 +122,11 @@
                           <ng-template pTemplate="input">
                             @if (headerRow.fieldType2 === GRIDFIELDTYPE.DATEFIELD)
                             {
-                              <input pInputText type="text" [(ngModel)]="headerRow.fieldValue2"/>
+                              <input pInputText type="text" [(ngModel)]="headerRow.fieldValue2"  style="height:25px;"/>
                             }
                             @else
                             {
-                              <input pInputText type="text" [(ngModel)]="headerRow.fieldValue2" />
+                              <input pInputText type="text" [(ngModel)]="headerRow.fieldValue2"  style="height:25px;" />
                             }
 
                           </ng-template>
@@ -144,6 +145,7 @@
                     showGridlines
                     [scrollable]="true"
                     [columns]="bodyCols"
+                    class="custom-height-table"
                     scrollHeight="700px">
         <ng-template pTemplate="header">
             <tr>
@@ -180,7 +182,7 @@
                     <p-cellEditor>
                         <ng-template pTemplate="input">
                             <input #input pInputText type="text"  [id]="'input-' + ri + '-' + 2"
-                                  [(ngModel)]="gridRow.amount" (keydown.enter)="onEnter($any($event),ptable, ri, 2)" />
+                                  [(ngModel)]="gridRow.amount" style="height:25px;" (keydown.enter)="onEnter($any($event),ptable, ri, 2)" />
                         </ng-template>
                         <ng-template pTemplate="output">
                             {{ gridRow.amount }}
@@ -209,7 +211,7 @@
                     <p-cellEditor>
                         <ng-template pTemplate="input">
                             <input pInputText type="text"
-                                  [(ngModel)]="gridRow.narration"   (keydown.enter)="onEnter($any($event),ptable, ri, 4)"/>
+                                  [(ngModel)]="gridRow.narration"  style="height:25px;" (keydown.enter)="onEnter($any($event),ptable, ri, 4)"/>
                         </ng-template>
                         <ng-template pTemplate="output">
                             {{ gridRow.narration }}

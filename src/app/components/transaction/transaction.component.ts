@@ -518,24 +518,28 @@ receipt():void
               totalAmount += transactions[i].Amount;
            }
        }
+       let rowNo:number = transactions.length+1;
        if (!rctpmt)
        {
           console.log(JV);
           if (JV.creditCount === 0)
           {
               this.headerGrid[1].fieldValue1 = TransactionRecord.GetJournalAccountName(this.transactionType);
-              this.bodyGrid.push({sno:transactions.length, account_Name: JV.debitAccountName, amount:totalAmount,drcr: 'Cr',narration: '',rctpmt:rctpmt});
+              this.bodyGrid.push({sno:rowNo, account_Name: JV.debitAccountName, amount:totalAmount,drcr: 'Cr',narration: '',rctpmt:rctpmt});
+              rowNo++;
           }
           else  if (JV.debitCount === 0)
           {
               this.headerGrid[1].fieldValue1 = TransactionRecord.GetJournalAccountName(this.transactionType);
-              this.bodyGrid.push({sno:transactions.length, account_Name:JV.creditAccountName, amount:totalAmount,drcr: 'Dr',narration: '',rctpmt:rctpmt});
+              this.bodyGrid.push({sno:rowNo, account_Name:JV.creditAccountName, amount:totalAmount,drcr: 'Dr',narration: '',rctpmt:rctpmt});
+              rowNo++;
           }
 
        }
        for (let i =transactions.length ; i < this.rowsInTransactionGrid;++i)
        {
-          this.bodyGrid.push({sno:i+1, account_Name: '', amount: 0,drcr: '',narration: '',rctpmt:rctpmt});
+          this.bodyGrid.push({sno:rowNo, account_Name: '', amount: 0,drcr: '',narration: '',rctpmt:rctpmt});
+          rowNo++;
        }
        if(print)
        {
