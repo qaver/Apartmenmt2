@@ -8,7 +8,20 @@
 @import "primeicons/primeicons.css";
 @import "primeflex/primeflex.css";
 
+::ng-deep  .custom-height-table .p-datatable-tbody > tr > td {
+    height: 25px !important; /* or min-height, padding, etc. */
+    padding: 0.1rem 0.5rem !important;
+    min-height: 0px !important;
+    line-height: 1 !important;
+    vertical-align: middle !important;; /* Optional: centers content vertically */
+}
 
+/* Target header rows if needed */
+::ng-deep .custom-height-table .p-datatable-thead > tr > th {
+    height: 40px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+}
 button {
   margin-top: 20px;
   margin-right: .5rem;

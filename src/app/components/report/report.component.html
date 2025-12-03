@@ -91,6 +91,7 @@
 </p-table> --->
 <!-- [tableStyle]="{'min-width': '50rem','border-collapse': 'collapse','border': '1px solid #ccc','background-color': '#f0f0f0','table-layout':'auto'}
  -->
+<!--[tableStyle]="{'min-width': '50rem','background-color': '#f0f0f0', width: 'max-content' }  "-->
 <div>
   <app-messages></app-messages>
  </div>
@@ -107,8 +108,9 @@
         showGridlines
         [resizableColumns]="true"
         columnResizeMode="expand"
+        class="custom-height-table"
         stripedRows
-        [tableStyle]="{'min-width': '50rem','background-color': '#f0f0f0', width: 'max-content' }  "
+        [tableStyle]="{'min-width': '50rem','background-color': '#f0f0f0','table-layout':'auto' }  "
   >
          <ng-template #caption>
             <div class="text-end pb-4">
@@ -175,8 +177,8 @@
             </tr>
         </ng-template>
         <ng-template pTemplate="groupheader"    let-Record let-expanded="expanded">
-            <tr pRowGroupHeader>
-                <td style="text-align:center;background-color:rgb(178,174,188);color: white;"  colspan="9">
+            <tr pRowGroupHeader style="height:35px">
+                <td style="text-align:center;background-color:rgb(178,174,188);color: white"  colspan="9">
                    <!-- <button type="button" pButton pRipple [pRowToggler]="Record" class="p-button-text p-button-rounded p-button-plain p-mr-2">
                       <span [ngClass]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></span>
                     </button> -->
@@ -185,7 +187,7 @@
             </tr>
         </ng-template>
         <ng-template #groupfooter let-Record>
-            <tr style = "border-top: 0px solid rgb(24,93,150); color: red;background-color:white; font-weight: bold;" class="p-rowgroup-footer">
+            <tr style = "border-top: 0px solid rgb(24,93,150); color: red;background-color:white; font-weight: bold;height:35px;" class="p-rowgroup-footer">
                 <td colspan="6" style="text-align:right;width:230px">Sub Total</td>
                 <td style="text-align:right;width:230px">{{calculateCustomerTotalDr(Record.Account1_Name)}}</td>
                 <td style="text-align:right;width:230px" >{{calculateCustomerTotalCr(Record.Account1_Name)}}</td>
