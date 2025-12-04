@@ -2,7 +2,7 @@ import { globalSettings } from './../../commondfiles/settings';
 import { ManageTransactionService} from '../../services/ManageTransactionService/manage-transaction-service';
 import { CommonModule } from '@angular/common';
 import { DataViewModule } from 'primeng/dataview';
-import { Component, OnInit,ViewChildren, QueryList , ElementRef, createPlatform } from '@angular/core';
+import { Component, OnInit,ViewChildren, QueryList , ElementRef, createPlatform, booleanAttribute } from '@angular/core';
 import { ManageAccountsService } from '../../services/ManageAccountsService/manageaccounts.service';
 import { Account, CodeName, CommonFileFunction, ErrorMsg, TransactionRecord,VoucherList,enumError,enumErrorText,normalizedJV } from '../../commondfiles/commondef';
 import { TreeTableModule } from "primeng/treetable";
@@ -457,14 +457,14 @@ receipt():void
 
       return "";
   }
-  async sendMail(emailAddress:string,fileName:string,uri:string)
+  async sendMail(emailAddress: string, fileName: string, uri: string)
   {
        if (this.platform.is('capacitor') || this.platform.is('cordova'))
         this.emailService.sendEmailWithAttachment(uri,emailAddress,this.transactionTite,`${this.transactionTite}`);
       else
-        this.messageService.addMsg('not yet implemented in web version.  File Name = '+fileName);
+         this.messageService.addMsg('not yet implemented in web version.  File Name = '+fileName);
   }
-   async getVoucher(print:boolean,copyVoucher:boolean)
+   async getVoucher(print:boolean,copyVoucher:boolean,whatsApp:boolean)
   {
      this.newVoucher = true;
      this.prevVoucherNo = this.headerGrid[0].fieldValue1;
@@ -541,27 +541,39 @@ receipt():void
           this.bodyGrid.push({sno:rowNo, account_Name: '', amount: 0,drcr: '',narration: '',rctpmt:rctpmt});
           rowNo++;
        }
-       if(print)
+       if(print || whatsApp)
        {
-        let fileName = CommonFileFunction.getFileName("Invoice_"+this.transactionType.toString()+"_");
-        let uri =  await this.printVoucherToPDF(fileName);
-        let emailAddress = "";
-        this.accountsService.getAccountsFromSQLServerWithFetch("Name",transactions[0].Account1_Name,false).then((accounts: Account[]) =>
-        {
-            if (accounts.length > 0 )
-            {
-                emailAddress = accounts[0].Email;
-                console.log ( "email = " + emailAddress +" add");
-            }
-            console.log("sendig mail."+ emailAddress+" add2");
-            this.sendMail(emailAddress,fileName,uri);
-
-        }).catch((errorReason) =>
+          let fileName:string ="";
+          let uri:string = "";
+          if (print)
           {
-            // This block runs ONLY when the promise is rejected
-            console.error("CAUGHT ERROR:", errorReason.message); // Output: CAUGHT ERROR: Connection failed: Server offline or invalid credentials.
-             this.sendMail("",fileName,uri);
-        });
+            fileName = CommonFileFunction.getFileName("Invoice_"+this.transactionType.toString()+"_");
+            uri =  await this.printVoucherToPDF(fileName);
+          }
+          let emailAddress = "";
+          let phoneNo = "";
+          this.accountsService.getAccountsFromSQLServerWithFetch("Name",transactions[0].Account1_Name,false).then((accounts: Account[]) =>
+          {
+              if (accounts.length > 0 )
+              {
+                  emailAddress = accounts[0].Email;
+                  console.log ( "email = " + emailAddress +" add");
+              }
+              console.log("sendig mail."+ emailAddress+" add2");
+              if (print)
+                this.sendMail(emailAddress,fileName,uri);
+              if (whatsApp)
+              {
+                  let msg:string = `Recieved  payment of ${this.bodyGrid[0].amount} from ${this.bodyGrid[0].account_Name} for the month of ${ this.headerGrid[2].fieldValue1} on ${this.headerGrid[0].fieldValue2}`;
+                  this.openWhatsApp(accounts[0].PhoneNo,msg,fileName);
+              }
+
+          }).catch((errorReason) =>
+            {
+              // This block runs ONLY when the promise is rejected
+              console.error("CAUGHT ERROR:", errorReason.message); // Output: CAUGHT ERROR: Connection failed: Server offline or invalid credentials.
+              this.sendMail("",fileName,uri);
+          });
        }
     }
   ).catch((errorReason) =>
@@ -573,7 +585,7 @@ receipt():void
   }
    printVoucher()
   {
-    this.getVoucher(true,false);
+    this.getVoucher(true,false,false);
     //this.printVoucherToPDF();
   }
   IsBankAccount(account2_Name:string):boolean
@@ -768,8 +780,41 @@ receipt():void
     } );
     return true;
   }
-  emailVoucher()
+  openWhatsApp(phoneNumber:string,message:string,attachment:string)
+   {
+    if (phoneNumber=== "")
+    {
+      this.messageService.addMsg("Phone No Empty.");
+      return;
+    }
+    /*if (this.globalsettingsService.getUseFetchCommand())
+    {
+      this.transactionService.sendMessage(message,phoneNumber).then((errMsg:ErrorMsg) =>
+      {
+          if (errMsg.Id !== -155)
+          {
+              return true;
+          }
+          return false;
+      } );
+    }
+    else
+    {*/
+        const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+
+    // Open in a new tab/window
+      window.open(url, '_blank');
+    //}
+
+    // Alternatively, you can use document.createElement('a') for slightly different behavior
+    // const link = document.createElement('a');
+    // link.target = '_blank';
+    // link.href = url;
+    // link.click();
+  }
+  whatsApp()
   {
+    this.getVoucher(false,false,true);
 
   }
  /* editVoucher()
@@ -874,7 +919,7 @@ onPaymentModeSelected(event:any)
       console.log("on complete voucher no");
       if (this.prevVoucherNo !== this.headerGrid[0].fieldValue1)
       {
-          this.getVoucher(false,false);
+          this.getVoucher(false,false,false);
       }
     }
 
@@ -896,7 +941,7 @@ copyVocherNoChange()
   this.copyVoucherList = [];
   if (this.copyVoucherNo !== "")
   {
-    this.getVoucher(false,true);
+    this.getVoucher(false,true,false);
   }
   this.copyVoucherNo = "";
   ///this.setTransactionType(this.oldTrType,this.oldtrTitle);

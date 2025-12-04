@@ -50,10 +50,10 @@ export class ManageTransactionService {
     async getVoucherFromDatabase(voucherNo:string): Promise<TransactionRecord[]>
     {
 
-      if (this.globalsettingsService.getUseLocalDatabase())
+     /* if (this.globalsettingsService.getUseLocal Database())
       {
           return this.sqllite.getVoucher(this.dbName,voucherNo);
-      }
+      }*/
 
         let url:string = "http://localhost:3000/api/data/transaction/"+voucherNo;
 
@@ -167,5 +167,34 @@ export class ManageTransactionService {
 
         console.log(errMsg);
         return errMsg;
+      }
+      async sendMessage(msg:string,phoneNo:string): Promise<ErrorMsg>
+      {
+          let url:string = "http://localhost:3000/api/data/message/whatsapp"
+
+           if (this.globalsettingsService.getUrl() != "")
+           {
+              url = this.globalsettingsService.getUrl()+"/api/data/message/whatsapp";
+           }
+           console.log("put from ",url);
+           const data = await fetch(url,{
+             method: 'PUT',
+             headers: {
+               'Content-Type': 'application/json',
+               // Add any additional headers if needed
+             },
+             body: JSON.stringify({phone:phoneNo,message:msg}),
+           });
+
+           const dataJSon = await data.json();
+           let errMsg =  <ErrorMsg> dataJSon;
+
+           if (errMsg.Id === -155)
+             this.messageService.add(`Send WhatsApp:: Failed to send messsag to ${phoneNo} (${msg}). ${errMsg.errMsg}`,{Id:1,Msg:msg});
+           else
+             this.messageService.add(`Send WhatsApp: ${phoneNo} (${msg}) suceeded`,{Id:1,Msg:msg});
+
+           console.log(errMsg);
+           return errMsg;
       }
 }

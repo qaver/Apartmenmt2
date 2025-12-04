@@ -8,6 +8,7 @@
         <option>https://apartment-qqmw.onrender.com</option>
         <option>https://apartment2-xyx3.onrender.com</option>
         <option>https://apartment-turso.onrender.com</option>
+        <option>http://localhost:3000</option>
   </datalist>
   <br>
   <!-- <p></p> -->
@@ -19,6 +20,11 @@
   <input type="checkbox" [checked]="globalsettingsService.getUseVoiceCommand()" name="UseVoiceCommand" id="UseVoiceCommand" value="UseVoiceCommand"
   (click)="onClickUseVoiceCommand($event)" >
   <label for="UseVoiceCommand">Use voice command</label><br>
+  <br>
+  <br>
+  <input type="checkbox" [checked]="globalsettingsService.getUseFetchCommand()" name="UseFetchCommand" id="UseFetchCommand" value="UseFetchCommand"
+  (click)="onClickUseUseFetchCommand($event)" >
+  <label for="UseFetchCommand">send Whatsapp from code</label><br>
   <br>
   <!--<input type="checkbox" [checked]="globalsettingsService.getUseSQLServerDatabase()" name="UseSQLServerDatabase" id="UseSQLServerDatabase" value="UseSQLServerDatabase"
   (click)="onClickUseSQLServerDatabase($event)" >
