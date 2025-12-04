@@ -42,6 +42,7 @@
     "capacitor-email-composer": "^7.0.2",
     "chart.js": "^4.5.0",
     "cordova-plugin-email-composer": "^0.10.1",
+    "express": "^5.1.0",
     "gh-pages": "^6.3.0",
     "jeep-sqlite": "^2.8.0",
     "jspdf": "^3.0.4",
@@ -53,8 +54,7 @@
     "service": "^0.1.4",
     "sql.js": "^1.12.0",
     "tslib": "^2.3.0",
-    "zone.js": "~0.15.1",
-    "express": "^5.1.0"
+    "zone.js": "~0.15.1"
   },
   "devDependencies": {
     "@angular/build": "^20.3.5",

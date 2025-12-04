@@ -23,6 +23,7 @@ import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
 import { FileOpener } from '@capacitor-community/file-opener';
 import { EmailService } from '../../services/emailservice/emailservice.service';
 import { GlobalsettingsService } from '../../services/globalsettings/globalsettings.service';
+import { Share } from '@capacitor/share';
 
 //import { RouterLink, RouterModule } from '@angular/router';
 ///import { globalSettings } from '../common/settings';
@@ -800,10 +801,28 @@ receipt():void
     }
     else
     {*/
+      if (this.platform.is('capacitor') || this.platform.is('cordova'))
+      {
+          const shareToWhatsapp = async () => {
+          const phoneNumber = '1234567890'; // Without +, -, or 00
+          const message = 'Hello from my app!';
+          const encodedMessage = encodeURIComponent(message);
+          const whatsappUrl = `wa.me{phoneNumber}?text=${encodedMessage}`;
+
+          await Share.share({
+            title: 'Open in WhatsApp',
+            text: message, // This text may or may not be used by the OS depending on the platform and app
+            url: whatsappUrl,
+          });
+        }
+      }
+      else
+      {
         const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
 
-    // Open in a new tab/window
-      window.open(url, '_blank');
+      // Open in a new tab/window
+          window.open(url, '_blank');
+      }
     //}
 
     // Alternatively, you can use document.createElement('a') for slightly different behavior
