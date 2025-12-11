@@ -87,6 +87,27 @@ export interface GeneralLedgerRecord
         "Account2_Name":string,
         "ChequeNo":string
   }
+  export class IncExpAccountRecord
+  {
+        "RowNo":number = 0;
+        "Account1_Type":string = "";
+        "Account1_No":number = 0;
+        "Account1_Code": string = "";
+        "Account1_Name":string = "";
+        "Amount": number = 0;
+  }
+  export class IncExpStatmentRecord
+  {
+         Account1_Name:string = "";
+         expense:IncExpAccountRecord;
+         income:IncExpAccountRecord;
+         constructor(grp:string,exp:IncExpAccountRecord,inc:IncExpAccountRecord)
+         {
+            this.expense = exp;
+            this.income = inc;
+            this.Account1_Name = grp;
+         }
+  }
  export class TransactionRecord
 {
       VoucherNo:string = "";
@@ -148,6 +169,7 @@ export class  normalizedJV
   debitAccountName:string = "";
   creditAccountName:string ="";
 };
+export const reportTypesInt = {GENERALLEDGER:0,TRIALBALANCE:1,INCOMEEXPENSESTATEMENT:3};
 export const enumError = {EMPTYVOUCHERNO:-5000,EMPTYPAYMENTMODE:-4900,CHEQUENOEMPTY:-4800,
                           INVALIDVOUCHERDATE:-4700,INVALIDDUEDATE:-4600,
                           DEBITSCREDITSNOTEQUAL:-4500,EMPTYDATE:-4400,INVALIDDATE:-4300,

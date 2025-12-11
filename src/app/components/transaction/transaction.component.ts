@@ -807,7 +807,7 @@ receipt():void
           const phoneNumber = '1234567890'; // Without +, -, or 00
           const message = 'Hello from my app!';
           const encodedMessage = encodeURIComponent(message);
-          const whatsappUrl = `wa.me{phoneNumber}?text=${encodedMessage}`;
+          const whatsappUrl = `wa.me${phoneNumber}?text=${encodedMessage}`;
 
           await Share.share({
             title: 'Open in WhatsApp',

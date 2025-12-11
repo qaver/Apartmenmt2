@@ -1,5 +1,5 @@
 //import { provideAnalytics } from '@angular/fire/analytics';
-import { Account, GeneralLedgerRecord } from '../../commondfiles/commondef';
+import { Account, GeneralLedgerRecord,IncExpAccountRecord,IncExpStatmentRecord } from '../../commondfiles/commondef';
 import { GlobalsettingsService } from '../globalsettings/globalsettings.service';
 import { Injectable } from '@angular/core';
 //import { HttpClient, /*HttpErrorResponse, HttpHeaders*/ } from '@angular/common/http';
@@ -268,6 +268,24 @@ async deleteAccountFromSQLServerWithFetch(account: Account): Promise<Account>
     const data = await fetch(url);
     console.log(data);
     return await data.json() ?? <GeneralLedgerRecord[]>[];
+  }
+  async getIncomeExpenseReport(fromDate:string,toDate:string,groupName:string,accountName:string): Promise<IncExpAccountRecord[]>
+   {
+    ///http://localhost:3000/api/data/report/incexpstmt/2025-01-01/2025-12-01
+    let url:string = "http://localhost:3000/api/data/report/incexpstmt/"+fromDate+"/"+toDate;
+
+    if (this.globalsettingsService.getUrl().trim() != "")
+      url = this.globalsettingsService.getUrl().trim() +"/api/data/report/incexpstmt/"+fromDate+"/"+toDate;
+    console.log("get income expense stmt ",url,{
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+        // Add any additional headers if needed
+      }});
+    const data = await fetch(url);
+    console.log(data);
+    return await data.json() ?? <IncExpStatmentRecord[]>[];
   }
   /*getHeroesFromSQLServer(): Observable<Hero[]>
   {

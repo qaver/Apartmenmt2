@@ -149,10 +149,13 @@
                 <p-button type="button" icon="pi pi-chevron-right" (click)="next()" [disabled]="isLastPage()" text />
               -->
             </div>
+            <div>
+              <h2>{{reportTitle}}</h2>
+            </div>
         </ng-template>
         <ng-template pTemplate="header">
             <tr style="width:100%;">
-              @for (col of colsGeneralLedger; track ['field'])
+              @for (col of colsReport; track ['field'])
               {
                @if((!col.hide) && (col.field !== 'Account1_Name'))
                 {
@@ -160,11 +163,11 @@
                   {
                     @if(col.field !== 'Account2_Name')
                     {
-                        <th  style= " border-top: 0px solid rgb(24,93,150); background-color: rgb(24,93,150);color: white; font-weight: bold; width:260px;">{{col.headerText}}</th>
+                        <th  style= " text-align:center;border-top: 0px solid rgb(24,93,150); background-color: rgb(24,93,150);color: white; font-weight: bold; width:260px;">{{col.headerText}}</th>
                     }
                     @else
                     {
-                       <th  style= " border-top: 0px solid rgb(24,93,150);background-color: rgb(24,93,150); color: white; font-weight: bold; width:330px  ">{{col.headerText}}</th>
+                       <th  style= " text-align:center;border-top: 0px solid rgb(24,93,150);background-color: rgb(24,93,150); color: white; font-weight: bold; width:330px  ">{{col.headerText}}</th>
                     }
 
                   }
@@ -177,107 +180,144 @@
             </tr>
         </ng-template>
         <ng-template pTemplate="groupheader"    let-Record let-expanded="expanded">
+          @if (IsGeneralLedger())
+          {
             <tr pRowGroupHeader style="height:35px">
-                <td style="text-align:center;background-color:rgb(178,174,188);color: white"  colspan="9">
-                   <!-- <button type="button" pButton pRipple [pRowToggler]="Record" class="p-button-text p-button-rounded p-button-plain p-mr-2">
-                      <span [ngClass]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></span>
-                    </button> -->
-                    <span class="font-bold ml-2">{{ Record.Account1_Name }}</span>
-                </td>
+
+                    <td style="text-align:center;background-color:rgb(178,174,188);color: white"  colspan="9">
+                      <!-- <button type="button" pButton pRipple [pRowToggler]="Record" class="p-button-text p-button-rounded p-button-plain p-mr-2">
+                          <span [ngClass]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></span>
+                        </button> -->
+                        <span class="font-bold ml-2">{{ Record.Account1_Name }}</span>
+                    </td>
             </tr>
+         }
         </ng-template>
         <ng-template #groupfooter let-Record>
+          @if (IsGeneralLedger())
+          {
             <tr style = "border-top: 0px solid rgb(24,93,150); color: red;background-color:white; font-weight: bold;height:35px;" class="p-rowgroup-footer">
                 <td colspan="6" style="text-align:right;width:230px">Sub Total</td>
                 <td style="text-align:right;width:230px">{{calculateCustomerTotalDr(Record.Account1_Name)}}</td>
                 <td style="text-align:right;width:230px" >{{calculateCustomerTotalCr(Record.Account1_Name)}}</td>
                 <td style="text-align:right;width:250px" >{{calculateCustomerTotalGroupBalance(Record.Account1_Name)}}</td>
             </tr>
+          }
         </ng-template>
         <ng-template pTemplate="footer">
+          @if (IsGeneralLedger())
+          {
             <tr style = "border-top: 0px solid rgb(24,93,150); color: red;background-color:white; font-weight:bolder;" >
                 <td colspan="6" style="text-align:right;width:230px">Report Total </td>
                 <td style="text-align:right;width:230px">{{convertNumberToString(reportTotalDr)}}</td>
                 <td style="text-align:right;width:230px" >{{convertNumberToString(reportTotalCr)}}</td>
                 <td style="text-align:right;width:250px" >{{reportTotalBalanceText}}</td>
             </tr>
+          }
         </ng-template>
         <ng-template pTemplate="body"
             let-Record>
-            <tr>
-              {{updateRunningTotal(Record.RowNo,Record.Amount,Record.Account1_Name)}}
-              <td style="text-align:left;width:230px;color:black">
-                  {{GetVoucherNo(Record)}}
-                  <!-- <p-tag [value]="Record.VoucherNo" />-->
-                </td>
-                <td style="text-align:left;width:230px;color:black">
-                  {{ GetVoucherDate(Record)}}
-                </td>
-                <td [ngStyle]="OpeningRow(Record)" style="text-align:left;width:330px">
-                    {{GetAccount2Name(Record)}}
-                </td>
-
-                <td style="text-align:left;width:230px;color:black">
-                  {{Record.ChequeNo}}
-                </td>
-                <td style="text-align:left;width:230px;color:black">
-                    {{Record.Narration}}
-                </td>
-
-                <td style="text-align:left;width:230px;color:black">
-                  {{Record.LNarration}}
-                </td>
-
-              @if(Record.Amount >= 0.0)
-              {
-                  <td  [ngStyle]="OpeningRow(Record)" colspan="0" style="text-align:right;width:230px">
-                      {{convertNumberToString(Record.Amount)}}
+            @if (IsGeneralLedger())
+            {
+              <tr>
+                {{updateRunningTotal(Record.RowNo,Record.Amount,Record.Account1_Name)}}
+                  <td style="text-align:left;width:230px;color:black">
+                    {{GetVoucherNo(Record)}}
+                    <!-- <p-tag [value]="Record.VoucherNo" />-->
                   </td>
-                  <td [ngStyle]="OpeningRow(Record)" colspan="0"   style="text-align:right;width:230px">
-
+                  <td style="text-align:left;width:230px;color:black">
+                    {{ GetVoucherDate(Record)}}
                   </td>
-              }
-              @else
-              {
-                <td [ngStyle]="OpeningRow(Record)" colspan="0"   style="text-align:right;width:230px">
+                  <td [ngStyle]="OpeningRow(Record.Account2_No)" style="text-align:left;width:330px">
+                      {{GetAccount2Name(Record)}}
+                  </td>
 
-                </td>
-                <td [ngStyle]="OpeningRow(Record)" colspan="0"   style="text-align:right;width:230px">
-                      {{(convertNumberToString(-Record.Amount))}}
-                </td>
-              }
-              <td [ngStyle]="OpeningRow(Record)" colspan="0"  style="text-align: right;width:250px">
-                  @if(runningTotal > 0.0)
-                  {
-                    {{convertNumberToString(runningTotal)}}Dr
+                  <td style="text-align:left;width:230px;color:black">
+                    {{Record.ChequeNo}}
+                  </td>
+                  <td style="text-align:left;width:230px;color:black">
+                      {{Record.Narration}}
+                  </td>
 
-                  }
-                  @else if (runningTotal === 0.0)
-                  {
-                       {{convertNumberToString(runningTotal)}}
-                  }
-                  @else
-                  {
-                    {{convertNumberToString(-runningTotal)}}Cr
+                  <td style="text-align:left;width:230px;color:black">
+                    {{Record.LNarration}}
+                  </td>
+
+                @if(Record.Amount >= 0.0)
+                {
+                    <td  [ngStyle]="OpeningRow(Record.Account2_No)" colspan="0" style="text-align:right;width:230px">
+                        {{convertNumberToString(Record.Amount)}}
+                    </td>
+                    <td [ngStyle]="OpeningRow(Record.Account2_No)" colspan="0"   style="text-align:right;width:230px">
+
+                    </td>
                 }
-              </td>
+                @else
+                {
+                  <td [ngStyle]="OpeningRow(Record.Account2_No)" colspan="0"   style="text-align:right;width:230px">
 
-                <!--<td colspan="0"  style="text-align:right;width:250px">
-
+                  </td>
+                  <td [ngStyle]="OpeningRow(Record.Account2_No)" colspan="0"   style="text-align:right;width:230px">
+                        {{(convertNumberToString(-Record.Amount))}}
+                  </td>
+                }
+                <td [ngStyle]="OpeningRow(Record.Account2_No)" colspan="0"  style="text-align: right;width:250px">
                     @if(runningTotal > 0.0)
                     {
-                        {{runningTotal}} Dr
+                      {{convertNumberToString(runningTotal)}}Dr
+
                     }
                     @else if (runningTotal === 0.0)
                     {
-                          0.00
+                        {{convertNumberToString(runningTotal)}}
                     }
                     @else
                     {
-                       {{-runningTotal}} Cr
-                    }
-                </td>-->
-            </tr>
+                      {{convertNumberToString(-runningTotal)}}Cr
+                  }
+                </td>
+
+                  <!--<td colspan="0"  style="text-align:right;width:250px">
+
+                      @if(runningTotal > 0.0)
+                      {
+                          {{runningTotal}} Dr
+                      }
+                      @else if (runningTotal === 0.0)
+                      {
+                            0.00
+                      }
+                      @else
+                      {
+                        {{-runningTotal}} Cr
+                      }
+                  </td>-->
+              </tr>
+            }
+            @else if (IsIncExpStatment())
+            {
+               <tr>
+                      <td [ngStyle]="OpeningRow(Record.expense.Account1_No)" style="text-align:left;width:230px;color:black">
+                          {{Record.expense.Account1_Name}}
+                      </td>
+                      <td [ngStyle]="OpeningRow(Record.expense.Account1_No)" style="text-align:right;width:230px;color:black">
+                        @if (Record.expense.Account1_Name !== "")
+                        {
+                          {{convertNumberToString(Record.expense.Amount)}}
+                        }
+                      </td>
+                      <td [ngStyle]="OpeningRow(Record.expense.Account1_No)" style="text-align:left;width:230px;color:black">
+                            {{Record.income.Account1_Name}}
+                      </td>
+                      <td [ngStyle]="OpeningRow(Record.expense.Account1_No)" style="text-align:right;width:230px;color:black">
+                         @if (Record.income.Account1_Name !== "")
+                        {
+                             {{convertNumberToString(Record.income.Amount)}}
+                        }
+                      </td>
+              </tr>
+
+            }
         </ng-template>
 
   </p-table>

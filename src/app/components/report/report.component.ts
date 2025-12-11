@@ -1,10 +1,11 @@
+
 import { VoiceRecogitionService } from './../../services/voice-recognition/voice-recogition.service';
 import { globalSettings } from './../../commondfiles/settings';
 
 import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, ChangeDetectorRef, DOCUMENT, Inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 ///import { ReportServiceService, Car } from '../../services/reportservice/report-service.service';
-import { Account, CodeName, dateFunctions, enumError, enumErrorText, ErrorMsg, GeneralLedgerRecord,CommonFileFunction, CommonCurrencyFunctions } from '../../commondfiles/commondef';
+import { Account, CodeName, dateFunctions, enumError, enumErrorText, ErrorMsg, GeneralLedgerRecord,CommonFileFunction, CommonCurrencyFunctions, reportTypesInt, IncExpStatmentRecord, IncExpAccountRecord } from '../../commondfiles/commondef';
 import { ManageAccountsService } from '../../services/ManageAccountsService/manageaccounts.service';
 
 import { ExportCSVOptions, TableModule } from 'primeng/table';
@@ -77,9 +78,9 @@ export class ReportComponent  implements AfterViewInit
     isFirstPage(): boolean {
         return this.generalLegerRecords ? this.first === 0 : true;
     }
-    OpeningRow(record:GeneralLedgerRecord)
+    OpeningRow(account2No:number)
     {
-      if (record.Account2_No === -500)
+      if (account2No === -500)
          return { fontWeight: 'bold', fontStyle: 'italic',color:"red"};
       else
         return  {color:"black"};
@@ -113,6 +114,7 @@ export class ReportComponent  implements AfterViewInit
    isLoading = true;
    ///@ViewChild('printContent') printContentRef!: ElementRef;
    @ViewChild('printContentGrid') reportGrid!: Table;
+   @ViewChild('printContentGrid', { read: ElementRef }) tableRef!: ElementRef;
    @ViewChild('printContent', { static: false }) printContent!: ElementRef;
 
 
@@ -139,9 +141,10 @@ export class ReportComponent  implements AfterViewInit
     ];
   groupedCustomers: any[] = [];
 */
-  reportTypes:string[] = ["General Ledger","Trial Balance"];
+  reportTypes:string[] = ["General Ledger","Profit & Loss"];
   reportType:string = this.reportTypes[0];
-
+  reportTypeInt:number = reportTypesInt.GENERALLEDGER;
+  reportTitle:string = "";
   groupNames:string[] = ["All"];
   groupName:string = "All";
 
@@ -159,7 +162,8 @@ export class ReportComponent  implements AfterViewInit
   public accounts: Account[] = [];
  // public generalLegerRecords: GeneralLedgerRecord[] = [];
 
-  public generalLegerRecords: GeneralLedgerRecord[] = [];
+  public generalLegerRecords: any[] = [];
+ /// public incExpRecords:IncExpStatmentRecord[] = [];
   public runningTotal = 0.0;
   public groupDr= 0.0
   public groupCr= 0.0;
@@ -175,22 +179,52 @@ export class ReportComponent  implements AfterViewInit
 
   public reportFinished = false;
   public colsGeneralLedger: any[] = [
-    {
-      field: 'Account1_Name',headerText:"Voucher No",hide:false},
-    { field: 'VoucherNo',headerText:"Voucher No",hide:false },
-    { field: 'VoucherDate',headerText:"VoucherDate",hide:false},
-    { field: 'Account2_Name',headerText:"Particulars",hide:false },
-    { field: "ChequeNo",headerText:"ChequeNo",hide:false },
-    { field: 'Narration',headerText:"Narration" ,hide:false},
-    { field: 'LNarration' ,headerText:"LNarration",hide:false},
-    { field: 'AmountDr',headerText:"Debit",hide:false },
-    { field: 'AmountCr',headerText:"Credit",hide:false },
-    { field: 'Balance',headerText:"Balance",hide:false },
-    { field: 'Type',headerText:"Type",hide:true},
-    { field: 'Parent',headerText:"Parent",hide:true},
-    { field: '"Account1_No',headerText:"account1_no",hide:true},
-    { field: '"Account2_No',headerText:"account2 no",hide:true},
+    {field: 'Account1_Name',headerText:"Voucher No",hide:false,width:"260px",align:"left"},
+    { field: 'VoucherNo',headerText:"Voucher No",hide:false,width:"260px",align:"left" },
+    { field: 'VoucherDate',headerText:"VoucherDate",hide:false,width:"260px",align:"left"},
+    { field: 'Account2_Name',headerText:"Particulars",hide:false,width:"330px",align:"left" },
+    { field: "ChequeNo",headerText:"ChequeNo",hide:false,width:"260px",align:"left" },
+    { field: 'Narration',headerText:"Narration" ,hide:false,width:"260px",align:"left"},
+    { field: 'LNarration' ,headerText:"LNarration",hide:false,width:"260px",align:"left"},
+    { field: 'AmountDr',headerText:"Debit",hide:false,width:"260px" ,align:"right"},
+    { field: 'AmountCr',headerText:"Credit",hide:false,width:"260px",align:"right" },
+    { field: 'Balance',headerText:"Balance",hide:false,width:"260px",align:"right" },
+    { field: 'Type',headerText:"Type",hide:true,width:"0px",align:"left"},
+    { field: 'Parent',headerText:"Parent",hide:true,width:"0px",align:"left"},
+    { field: '"Account1_No',headerText:"account1_no",hide:true,width:"0px",align:"left"},
+    { field: '"Account2_No',headerText:"account2 no",hide:true,width:"0px",align:"left"},
   ];
+  public colsIncExpStatement: any[] = [
+    {field:  'Expense_Account_Name',headerText:"Expenditure",hide:false,width:"330px" },
+    { field: 'Expense_Amount',headerText:"Amount",hide:false,width:"260px" },
+    {field:  'Income_Account_Name',headerText:"Income",hide:false,width:"330px" },
+    { field: 'Income_Amount',headerText:"Amount",hide:false,width:"260px" },
+  ];
+  public colsReport: any[] = [];
+  IsGeneralLedger():boolean
+  {
+    return (this.reportTypeInt === reportTypesInt.GENERALLEDGER);
+  }
+   IsIncExpStatment():boolean
+  {
+    return (this.reportTypeInt === reportTypesInt.INCOMEEXPENSESTATEMENT);
+  }
+  isExpenseAccount(acType:string):boolean
+  {
+    if (acType === null)
+      return false;
+    if (acType.toLowerCase() === "expense")
+      return true;
+    return false;
+  }
+  isIncomeAccount(acType:string):boolean
+  {
+    if (acType === null)
+      return false
+    if (acType.toLowerCase() === "income")
+      return true;
+    return false;
+  }
   convertNumberToString(amount:number):string
   {
     return CommonCurrencyFunctions.convertNumberToString(amount,this.no_of_decimals);
@@ -231,6 +265,19 @@ export class ReportComponent  implements AfterViewInit
       return;
      this.runningTotal += amount;
     /// console.log("running tot = ",this.runningTotal," row no = ",rowNo);
+    if (this.IsIncExpStatment())
+    {
+
+      if(this.isExpenseAccount(name))  // account type is being passed from html in name field for incexpstmt report;;
+      {
+            this.reportTotalDr += amount;
+      }
+      else
+      {
+          this.reportTotalCr  += amount;
+      }
+       return;
+    }
      if (amount >=0.0)
      {
         this.currentDr += amount;
@@ -515,7 +562,15 @@ export class ReportComponent  implements AfterViewInit
           return;
       }
       if (this.reportType === "General Ledger")
-        this.generateGeneralLedger(stDate,endDate)
+      {
+        this.generateGeneralLedger(stDate,endDate);
+        this.reportTypeInt = reportTypesInt.GENERALLEDGER;
+      }
+      else if (this.reportType === "Profit & Loss")
+      {
+        this.generateIncomeExpenseStmt(stDate,endDate);
+        this.reportTypeInt = reportTypesInt.INCOMEEXPENSESTATEMENT;
+      }
    }
    ngOnInit(): void
    {
@@ -525,7 +580,7 @@ export class ReportComponent  implements AfterViewInit
           this.mobileApp = true;
           this.scrollH = "60vh";
        }
-      this.reportTypes = ["General Ledger","Trial Balance"];
+      //this.reportTypes = ["General Ledger","Profit & Loss"];
       this.groupNames = ["All","General","Debtor","Creditor","Income","Expense","PettyCash","Cash","Bank"];
       this.groupName  = "All";
       this.accountNames = [{Code:"All",Name:"All",AcType:"All"}];
@@ -580,6 +635,96 @@ export class ReportComponent  implements AfterViewInit
           console.log(generalLegerRecords);
           if (generalLegerRecords.length > 0)
              this.firstReportRowNo = generalLegerRecords[0].RowNo;
+
+          let forAccount:string = "";
+          if (this.groupName.toLowerCase() !== "all")
+            forAccount = " for group "+this.groupName;
+          else if (this.accountName.toLowerCase() !== "all")
+          {
+            if (this.accountNames.find(account => account.Name === this.accountName))
+              forAccount = " for "+this.accountName;
+          }
+          this.reportTitle = "General Leger from "+this.fromDate + " to " +this.toDate +forAccount;
+          this.colsReport = this.colsGeneralLedger;
+      });
+  }
+  generateIncomeExpenseStmt(stDate:string,endDate:string):void
+  {
+
+  //console.log(stDate,endDate,this.groupName,this.accountName);
+      this.accountsService.getIncomeExpenseReport(stDate,endDate,this.groupName,this.accountName).then((incExpRecords: IncExpAccountRecord[]) =>
+      {
+          let expTotal:number = 0.0;
+          let IncTotal:number = 0.0;
+          let incExpAccounts:IncExpStatmentRecord[] = [];
+          let emptyIncomeRecord:IncExpAccountRecord = {RowNo: 0,Account1_Type: 'income',Account1_No: 0,Account1_Code: '',Account1_Name: '',Amount: 0};
+          let emptyExpenseRecord:IncExpAccountRecord = {RowNo: 0,Account1_Type: 'expense',Account1_No: 0,Account1_Code: '',Account1_Name: '',Amount: 0};
+          let i = 0;
+          for (i=0; i < incExpRecords.length;++i)
+          {
+             if (incExpRecords[i].Account1_Type.toLowerCase() !== "expense")
+                break;
+              expTotal += incExpRecords[i].Amount;
+
+              incExpAccounts.push({Account1_Name:"",expense:incExpRecords[i],income:emptyIncomeRecord})
+          }
+          let incomeIndex = 0;
+          for (; i < incExpRecords.length;++i)
+          {
+              IncTotal += incExpRecords[i].Amount;
+              if (incomeIndex < incExpAccounts.length)
+              {
+                incExpAccounts[incomeIndex].income = incExpRecords[i];
+                incomeIndex++;
+              }
+              else
+              {
+                incExpAccounts.push({Account1_Name:"",expense:emptyExpenseRecord,income:incExpRecords[i]})
+              }
+          }
+          let balance:number = IncTotal - expTotal;
+          let balanceRecord:IncExpAccountRecord = {RowNo: -500,Account1_Type: '',Account1_No: -500,Account1_Code: '',Account1_Name: '',Amount: 0};
+          let reportTotal:number = 0.0;
+          let emptyBalanceIncomeRecord:IncExpAccountRecord = {RowNo: 0,Account1_Type: 'income',Account1_No: -500,Account1_Code: '',Account1_Name: '',Amount: 0};
+          let emptyBalanceExpenseRecord:IncExpAccountRecord = {RowNo: 0,Account1_Type: 'expense',Account1_No: -500,Account1_Code: '',Account1_Name: '',Amount: 0};
+          if (balance > 0)
+          {
+              balanceRecord.Account1_Name = "RESERVE & SURPLUS";
+              balanceRecord.Account1_Type = "expense";
+              balanceRecord.Amount = balance;
+              incExpAccounts.push({Account1_Name:"",expense:balanceRecord,income:emptyBalanceIncomeRecord})
+              reportTotal = IncTotal;
+          }
+          else
+          {
+              balanceRecord.Account1_Name = "LOSS";
+              balanceRecord.Account1_Type = "income";
+              balanceRecord.Amount = -balance;
+              incExpAccounts.push({Account1_Name:"",expense:emptyBalanceExpenseRecord,income:balanceRecord})
+              reportTotal = expTotal;
+          }
+          let reportTotalExp:IncExpAccountRecord = {RowNo: -600,Account1_Type: 'expense',Account1_No: -500,Account1_Code: '',Account1_Name: 'Report Total',Amount: reportTotal};
+          let reportTotalInc:IncExpAccountRecord = {RowNo: -600,Account1_Type: 'income',Account1_No: -500,Account1_Code: '',Account1_Name: ' ',Amount: reportTotal};
+
+          incExpAccounts.push({Account1_Name:"",expense:reportTotalExp,income:reportTotalInc});
+          incExpAccounts.push({Account1_Name:"",expense:emptyExpenseRecord,income:emptyIncomeRecord});
+          incExpAccounts.push({Account1_Name:"",expense:emptyExpenseRecord,income:emptyIncomeRecord});
+          this.generalLegerRecords = incExpAccounts;
+          this.runningTotal = 0.0;
+          this.reportTotalBalance = 0.0;
+          this.reportTotalBalance = 0.0;
+          this.reportTotalBalance = 0.0
+
+          this.currentDr = 0.0;
+          this.currentCr = 0.0;
+          this.reportFinished = false;
+          console.log(incExpRecords);
+          if (incExpRecords.length > 0)
+             this.firstReportRowNo = incExpRecords[0].RowNo;
+
+
+          this.reportTitle = "Income Expense Statement from "+this.fromDate + " to " +this.toDate;
+          this.colsReport = this.colsIncExpStatement;
       });
   }
   getAccounts()
@@ -914,8 +1059,411 @@ export class ReportComponent  implements AfterViewInit
 
   doc.save('general_ledger_grouped.pdf');
 }*/
+
+async saveReport(fileName:string):Promise<string>
+{
+ /* console.log(this.reportGrid);
+   const tableEl = this.tableRef.nativeElement.querySelector('table');
+
+    if (tableEl)
+    {
+      // 2. Count Rows using standard JavaScript DOM properties
+      // .rows includes header rows; use tBodies[0].rows for just data rows
+      const rowCount = tableEl.rows.length;
+
+      // 3. Count Columns by looking at the first row's cells
+      const firstRow = tableEl.rows[0];
+      const colCount = firstRow ? firstRow.cells.length : 0;
+
+      console.log(`Rows: ${rowCount}, Columns: ${colCount}`);
+    }*/
+    const exportColumns: any[] = []
+    const colStyles:any[] = [];
+    let cStyle:any =
+    {
+      0: { cellWidth: 65, halign: 'left' },
+      1: { cellWidth: 65, halign: 'left' },
+      2: { cellWidth: 110,halign: 'left' },
+      3: { cellWidth: 70, halign: 'left' },
+      4: { cellWidth: 60, halign: 'left' },
+      5: { cellWidth: 60, halign: 'left' },
+      6: { cellWidth: 50, halign: 'right' },
+      7: { cellWidth: 50, halign: 'right' },
+      8: { cellWidth: 60, halign: 'right' }
+      }
+      let startCol = 0;
+      if (this.IsGeneralLedger())
+        startCol = 1;
+      else if (this.IsIncExpStatment())
+      {
+
+        cStyle =
+        {
+          0: { cellWidth: 110, halign: 'left' },
+          1: { cellWidth: 70, halign: 'right' },
+          2: { cellWidth: 110,halign: 'left' },
+          3: { cellWidth: 70, halign: 'right' },
+          }
+
+      }
+    for (let i = startCol; i <  this.colsReport.length;++i)
+    {
+       if(this.colsReport[i].hide)
+          continue;
+        exportColumns.push(this.colsReport[i]);
+
+    }
+    const groupBy = (key:any) => (array:any) =>
+        array.reduce((objectsByKeyValue:any, obj:any) => {
+          const value = obj[key];
+          objectsByKeyValue[value] = (objectsByKeyValue[value] || []).concat(obj);
+          return objectsByKeyValue;
+      }, {});
+      let groupedByType:any;
+      if (this.IsGeneralLedger())
+        groupedByType = groupBy('Account1_Name')(this.generalLegerRecords);
+      else if (this.IsIncExpStatment())
+        groupedByType = groupBy('Account1_Name')(this.generalLegerRecords);
+      else
+        return "";
+
+    let titleLength = 1;
+    if (this.reportTitle.length > 0)
+      titleLength = this.reportTitle.length;
+
+    let currentY = 30;
+    const doc = new jsPDF('portrait', 'pt', 'a4');
+    doc.text(this.reportTitle, (doc.internal.pageSize.getWidth()-(titleLength*7.5))/2, currentY);
+    currentY += 20;
+    let reportDr = 0.0;
+    let reportCr = 0.0;
+    let reportBalance = 0.0;
+
+    Object.keys(groupedByType).forEach(Account1_Name =>
+    {
+      console.log("www");
+      let currentBalance = 0.0;
+      let groupDr = 0.0;
+      let groupCr = 0.0;
+      let groupBalance = 0.0;
+      let typeRecords:any[] = [];
+      if (this.IsGeneralLedger())
+      {
+        doc.setFontSize(14);
+        doc.setFont('helvetica', 'bold');
+        doc.text(Account1_Name, (doc.internal.pageSize.getWidth()-50)/2, currentY);
+       /// console.log(Account1_Name , " acc1 name" +this.generalLegerRecords.length) ;
+        typeRecords = this.generalLegerRecords.filter(r => r.Account1_Name === Account1_Name);
+        currentY += 10;
+      }
+      else if (this.IsIncExpStatment())
+      {
+         typeRecords = this.generalLegerRecords;
+
+      }
+      autoTable(doc, {
+      head: [exportColumns.map(c => c.headerText)],
+      body: typeRecords,
+
+      columnStyles:cStyle,
+      theme: 'grid',
+      startY: currentY,
+      margin: { left: 1, right: 1 }, // Indent the table slightly
+      styles: { fontSize: 9 ,halign: 'left'},
+      headStyles: { fillColor: [24,93,150], textColor: [255, 255, 255] ,halign: 'center' },
+      rowPageBreak: 'avoid', // Prevent breaking groups across pages if possible
+      didParseCell: (data) =>
+      {
+          if (data.section === 'head')
+          {
+          }
+          else if (data.section === 'foot')
+          {
+              // Style the footer totals differently
+              // ...
+          }
+          else if (data.section === 'body')
+          {
+            if (this.IsGeneralLedger())
+            {
+              if (typeRecords[data.row.index].Account2_No === -500)
+              {
+                data.cell.styles.textColor = [255, 0, 0];
+                data.cell.styles.fontStyle = 'bolditalic';
+              }
+              ///console.log("body ",typeRecords[data.row.index]);
+              if (data.column.index === 0)
+              {
+                if (typeRecords[data.row.index].VoucherNo !== null)
+                data.cell.text = [typeRecords[data.row.index].VoucherNo];
+              }
+              else if (data.column.index === 1)
+              {
+
+                if (typeRecords[data.row.index].VoucherDate !== null)
+                  data.cell.text = [typeRecords[data.row.index].VoucherDate];
+              }
+              else if (data.column.index === 2)
+              {
+                if (typeRecords[data.row.index].Account2_Name !== null)
+                  data.cell.text = [typeRecords[data.row.index].Account2_Name];
+              }
+              else if (data.column.index === 3)
+              {
+                if (typeRecords[data.row.index].ChequeNo !== null)
+                  data.cell.text = [typeRecords[data.row.index].ChequeNo];
+              }
+              else if (data.column.index === 4)
+              {
+                if (typeRecords[data.row.index].Narration !== null)
+                  data.cell.text = [typeRecords[data.row.index].Narration];
+              }
+              else if (data.column.index === 5)
+              {
+                if (typeRecords[data.row.index].LNarration !== null)
+                  data.cell.text = [typeRecords[data.row.index].LNarration];
+              }
+              else if (data.column.index === 6) // debit amount
+              {
+                let amount:number = 0.0;
+                if( typeRecords[data.row.index].Amount > 0.0)
+                {
+                    amount = typeRecords[data.row.index].Amount;
+                    currentBalance += amount;
+                    groupDr += amount;
+                  // Overwrite the cell's text content with the computed value
+                    data.cell.text = [`${this.convertNumberToString(amount)}`];
+                }
+                else
+                {
+                    data.cell.text = [""];
+                }
+              }
+              else if (data.column.index === 7) //credit amount
+              {
+                let amount:number = 0.0;
+                if( typeRecords[data.row.index].Amount < 0.0)
+                {
+                    amount = typeRecords[data.row.index].Amount;
+                    currentBalance += amount;
+                    groupCr += amount;
+                    amount = -amount;
+                    data.cell.text = [`${this.convertNumberToString(amount)}`];
+                }
+                else
+                {
+                    data.cell.text = [""];
+                }
+              }
+              else if (data.column.index === 8) //balance
+              {
+                groupBalance += currentBalance;
+                if( groupBalance < 0.0)
+                {
+                    data.cell.text = [`${this.convertNumberToString(-groupBalance)}Cr`];
+                }
+                else  if( groupBalance > 0.0)
+                {
+                    data.cell.text = [`${this.convertNumberToString(groupBalance)}Dr`];
+                }
+                currentBalance  = 0.0;
+              }
+            }
+            else if (this.IsIncExpStatment())
+            {
+                  if (typeRecords[data.row.index].expense.Account1_No == -500)
+                  {
+                        data.cell.styles.textColor = [255, 0, 0];
+                  }
+                  if (data.column.index === 0)
+                  {
+                    if (typeRecords[data.row.index].expense.Account1_Name !== null)
+                     data.cell.text = [typeRecords[data.row.index].expense.Account1_Name];
+                  }
+                  else if (data.column.index === 1)
+                  {
+                    if ((typeRecords[data.row.index].expense.Account1_Name !== null) &&  (typeRecords[data.row.index].expense.Account1_Name !== ""))
+                   if (typeRecords[data.row.index].expense.Amount !== null)
+                      data.cell.text = [`${this.convertNumberToString(typeRecords[data.row.index].expense.Amount)}`];
+
+                  }
+                  else if (data.column.index === 2)
+                  {
+                    if (typeRecords[data.row.index].income.Account1_Name !== null)
+                      data.cell.text = [typeRecords[data.row.index].income.Account1_Name];
+                  }
+                  else if (data.column.index === 3)
+                  {
+                    if ((typeRecords[data.row.index].income.Amount !== null)&&  (typeRecords[data.row.index].income.Account1_Name !== ""))
+                     data.cell.text = [`${this.convertNumberToString(typeRecords[data.row.index].income.Amount)}`];
+                  }
+            }
+          }
+
+        }
+       ,
+      // Hook to draw headers and footers
+      didDrawCell: (data) =>
+      {
+
+        if  ((data && data.table) && (data.section === 'body'))
+        {
+          if (this.IsGeneralLedger())
+          {
+              if (data.row.index  === typeRecords.length-1)
+              {
+                if (data.column.index === 5)
+                {
+                  const targetColIndex = 5;
+                  const targetCell = data.row.cells[targetColIndex];
+                  if (targetCell)
+                  {
+                      doc.setTextColor(255, 0, 0);
+                      let totalXPos = targetCell.x; // Right edge of the column
+                      const totalYPos = data.cell.y +targetCell.height +15; // Position above the current row
+                      doc.setFontSize(10);
+                      doc.setFont('helvetica', 'bold');
+                      /// console.log("in footer",totalXPos,totalYPos);
+                      // doc.text aligns based on the X coordinate provided and the options {align: 'right'}
+                      doc.text(`Sub Total`,totalXPos,totalYPos,{ align: 'left' } );
+                      totalXPos += targetCell.width;
+
+                      let targetCell1 = data.row.cells[6];
+                      totalXPos += targetCell1.x + targetCell1.width; // Right edge of the column
+                      doc.text(`${this.convertNumberToString(groupDr)}`,totalXPos,totalYPos,{ align: 'right' } );
+                      reportDr += groupDr;
+
+                      targetCell1 = data.row.cells[7];
+                      totalXPos += targetCell1.x + targetCell1.width; // Right edge of the column
+                      if (groupCr < 0)
+                        doc.text( `${this.convertNumberToString(-groupCr)}`,totalXPos,totalYPos, { align: 'right' });
+                      else
+                        doc.text( `${this.convertNumberToString(0.0)}`,totalXPos,totalYPos, { align: 'right' });
+                      reportCr += groupCr;
+
+                      targetCell1 = data.row.cells[8];
+                      totalXPos += targetCell1.x + targetCell1.width; // Right edge of the column
+                      if (groupBalance < 0)
+                      {
+                        doc.text(`${this.convertNumberToString(-groupBalance)}Cr`,totalXPos,totalYPos,{ align: 'right' });
+                      }
+                      else if (groupBalance === 0)
+                      {
+                        doc.text(`${this.convertNumberToString(0.0)}`,totalXPos,totalYPos,{ align: 'right' });
+                      }
+                      else
+                        doc.text(`${this.convertNumberToString(groupBalance)}Dr`,totalXPos,totalYPos,{ align: 'right' });
+                      reportBalance += groupBalance;
+                    }
+                    if ((this.generalLegerRecords.length > 0 ) && (typeRecords[data.row.index].RowNo == this.generalLegerRecords[this.generalLegerRecords.length-1].RowNo))
+                    {
+                      doc.setTextColor(255, 0, 0);
+                      let totalXPos = targetCell.x ; // Right edge of the column
+                      const totalYPos = data.cell.y +targetCell.height + targetCell.height +15; // Position above the current row
+                      doc.setFontSize(10);
+                      doc.setFont('helvetica', 'bold');
+                      /// console.log("in footer",totalXPos,totalYPos);
+                      // doc.text aligns based on the X coordinate provided and the options {align: 'right'}
+                      doc.text(`Report Total`,totalXPos,totalYPos,{ align: 'left' });
+                      totalXPos +=  targetCell.width;
+                      let targetCell1 = data.row.cells[6];
+                      totalXPos += targetCell1.x + targetCell1.width; // Right edge of the column
+                      doc.text(`${this.convertNumberToString(reportDr)}`,totalXPos,totalYPos,{ align: 'right' });
+
+                      targetCell1 = data.row.cells[7];
+                      totalXPos += targetCell1.x + targetCell1.width; // Right edge of the column
+                      doc.text(`${this.convertNumberToString(-reportCr)}`,totalXPos,totalYPos,{ align: 'right' } );
+
+                      targetCell1 = data.row.cells[8];
+                      totalXPos += targetCell1.x + targetCell1.width; // Right edge of the column
+                      if (reportBalance < 0.0)
+                      {
+                        doc.text(`${this.convertNumberToString(-reportBalance)}Cr`,totalXPos,totalYPos,{ align: 'right' });
+                      }
+                      else if (reportBalance === 0.0)
+                      {
+                          doc.text(`${this.convertNumberToString(0.0)}`,totalXPos,totalYPos,{ align: 'right' });
+                      }
+                      else
+                        doc.text(`${this.convertNumberToString(reportBalance)}Dr`,totalXPos,totalYPos,{ align: 'right' });
+                    }
+                  }
+                  else if (this.IsIncExpStatment())
+                  {
+                  }
+             }
+          }
+
+          // If it's the last row, draw the final subtotal and grand total
+          if (data.row.index === this.generalLegerRecords.length - 1)
+          {
+              /*const finalY = (doc as any).lastAutoTable.finalY;
+              doc.setFontSize(10);
+              doc.text(`Sub Total for ${previousCategory}: ${subTotal}`, data.settings.margin.left + data.table.width - 70, finalY + 10);
+
+              // Add Grand Total
+              const grandTotal = this.products.reduce((sum, p) => sum + p.quantity, 0);
+              doc.setFontSize(12);
+              doc.text(`Grand Total: ${grandTotal}`, data.settings.margin.left + data.table.width - 70, finalY + 30);*/
+          }
+        }
+      },
+
+    });
+    currentY = (doc as any).lastAutoTable.finalY + 30;
+  });
+
+ // 4. Save the PDF
+    if (this.mobileApp)
+    {
+      const pdfOutput = doc.output('datauristring').split(',')[1]; // Get Base64 string
+      try
+      {
+        const result =   Filesystem.writeFile({
+          path: fileName,
+          data: pdfOutput,
+          directory: Directory.Documents // Save to public Documents folder
+        //, encoding: Encoding.Base64
+        });
+        const result1 =   await Filesystem.writeFile({
+          path: fileName,
+          data: pdfOutput,
+          directory: Directory.Cache // Save to public Documents folder
+          //, encoding: Encoding.Base64
+        });
+      // this.messageService.addMsg("saved to "+fileName + ". ");
+
+        // Open the file using the File Opener plugin
+        FileOpener.open({
+          filePath: fileName,
+          contentType: 'application/pdf'
+        });
+        return result1.uri;
+
+      }
+      catch (e)
+      {
+        this.messageService.addMsg("Error Saving to "+fileName + ". "+ e);
+        console.error('Error saving PDF:', e);
+      }
+    }
+    else
+    {
+      doc.save(fileName);
+    }
+    return "";
+}
+
  async exportToPdf_FromData(fileName:string) :Promise<string>
  {
+  if (this.IsIncExpStatment())
+  {
+     return this.saveReport(fileName);
+  }
+  else if (this.IsGeneralLedger())
+  {
+    //return this.saveReport(fileName);
+  }
 
     const exportColumns: any[] = []
     for (let i = 1; i <  this.colsGeneralLedger.length;++i)
@@ -946,8 +1494,11 @@ export class ReportComponent  implements AfterViewInit
       }, {});
 
    const groupedByType = groupBy('Account1_Name')(this.generalLegerRecords);
-      ///console.log(groupedByType);
-  doc.text('General Ledger', (doc.internal.pageSize.getWidth()-20)/2, currentY);
+    console.log(groupedByType);
+    let titleLength = 1;
+    if (this.reportTitle.length > 0)
+      titleLength = this.reportTitle.length;
+  doc.text(this.reportTitle, (doc.internal.pageSize.getWidth()-(titleLength*7.5))/2, currentY);
    currentY += 20;
    let reportDr = 0.0;
    let reportCr = 0.0;
@@ -958,7 +1509,7 @@ export class ReportComponent  implements AfterViewInit
       doc.setFontSize(14);
       doc.setFont('helvetica', 'bold');
       doc.text(Account1_Name, (doc.internal.pageSize.getWidth()-50)/2, currentY);
-      console.log(Account1_Name , " acc1 name" +this.generalLegerRecords.length) ;
+      //console.log(Account1_Name , " acc1 name" +this.generalLegerRecords.length) ;
       currentY += 10;
       let currentBalance = 0.0;
       let groupDr = 0.0;
@@ -972,7 +1523,7 @@ export class ReportComponent  implements AfterViewInit
       columnStyles: {
       0: { cellWidth: 65, halign: 'left' },
       1: { cellWidth: 65, halign: 'left' },
-      2: { cellWidth: 110, halign: 'left' },
+      2: { cellWidth: 110,halign: 'left' },
       3: { cellWidth: 70, halign: 'left' },
       4: { cellWidth: 60, halign: 'left' },
       5: { cellWidth: 60, halign: 'left' },
@@ -1341,28 +1892,35 @@ export class ReportComponent  implements AfterViewInit
   }
   async exportPdf()
   {
-      let fileName:string = CommonFileFunction.getFileName("Report_GL");
+      let reportPrefix = "GL_";
+      if (this.IsIncExpStatment())
+        reportPrefix = "PL_";
+      let fileName:string = CommonFileFunction.getFileName("Report_"+reportPrefix);
        const uri = await  this.exportToPdf_FromData(fileName);// this function uses the GL data generate the table based pdf  file .file size is small usually in KBS. but the report has to be recreated from the recordset and not html
                                           // would require different function for each report type.
-      this.emailData.to = "";
-      if ((this.groupName.toLocaleLowerCase() !== "all") && (this.accountName.toLocaleLowerCase() !== "all"))
-      {
-          this.accountsService.getAccountsFromSQLServerWithFetch("Name",this.accountName,false).then((accounts: Account[]) =>
-          {
-              if (accounts.length > 0 )
-              {
-                  this.emailData.to = accounts[0].Email;
-                ///  console.log ( "email = " + this.emailData.to +" add");
-              }
-             /// console.log("sendig mail."+ this.emailData.to+" add2");
-              this.sendMail(fileName,uri);
 
-          });
-      }
-      else
+      if(this.IsGeneralLedger())
       {
-          //console.log("sendig mail. no mail address"+ this.emailData.to+" add3");
-          this.sendMail(fileName,uri);
+        this.emailData.to = "";
+        if ((this.groupName.toLocaleLowerCase() !== "all") && (this.accountName.toLocaleLowerCase() !== "all"))
+        {
+            this.accountsService.getAccountsFromSQLServerWithFetch("Name",this.accountName,false).then((accounts: Account[]) =>
+            {
+                if (accounts.length > 0 )
+                {
+                    this.emailData.to = accounts[0].Email;
+                  ///  console.log ( "email = " + this.emailData.to +" add");
+                }
+              /// console.log("sendig mail."+ this.emailData.to+" add2");
+                this.sendMail(fileName,uri);
+
+            });
+        }
+        else
+        {
+            //console.log("sendig mail. no mail address"+ this.emailData.to+" add3");
+            this.sendMail(fileName,uri);
+        }
       }
 
       ///this.exportToImageBasedPdf(fileName); // this funciton creates the image from html and saves as pdf file . file size is large  and typically in MBS but works for all report types.
