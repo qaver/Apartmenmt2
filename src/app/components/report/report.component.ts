@@ -236,7 +236,7 @@ export class ReportComponent  implements AfterViewInit
     {field: 'Account1_Name',headerText:"Voucher No",hide:false,width:"260px",align:"left"},
     { field: 'VoucherNo',headerText:"Voucher No",hide:false,width:"260px",align:"left" },
     { field: 'VoucherDate',headerText:"Date",hide:false,width:"260px",align:"left"},
-    { field: 'Account2_Name',headerText:"Particulars",hide:false,width:"330",align:"left" },
+    { field: 'Account2_Name',headerText:"Particulars",hide:false,width:"330px",align:"left" },
     { field: "ChequeNo",headerText:"ChequeNo",hide:false,width:"260px",align:"left" },
     { field: 'Narration',headerText:"Narration" ,hide:false,width:"260px",align:"left"},
     { field: 'LNarration' ,headerText:"LNarration",hide:false,width:"260px",align:"left"},
@@ -1882,12 +1882,12 @@ async saveReport(fileName:string):Promise<string>
  {
   if (this.IsIncExpStatment())
   {
-    this.saveReportFromDOM(fileName);
+    return this.saveReportFromDOM(fileName);
     //// return this.saveReport(fileName );
   }
   else if (this.IsGeneralLedger())
   {
-     this.saveReportFromDOM(fileName);
+     return this.saveReportFromDOM(fileName);
     ///return this.saveReport( fileName);
   }
 

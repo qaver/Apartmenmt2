@@ -221,21 +221,21 @@
             {
               <tr>
                 {{updateRunningTotal(Record.RowNo,Record.Amount,Record.Account1_Name)}}
-                  <td style="text-align:left;width:230px;color:black">
+                  <td style="text-align:left;width:210px;color:black">
                     {{GetVoucherNo(Record)}}
                     <!-- <p-tag [value]="Record.VoucherNo" />-->
                   </td>
-                  <td style="text-align:left;width:230px;color:black">
+                  <td style="text-align:left;width:210px;color:black">
                     {{ GetVoucherDate(Record)}}
                   </td>
-                  <td [ngStyle]="OpeningRow(Record.Account2_No)" style="text-align:left;width:330px">
+                  <td [ngStyle]="OpeningRow(Record.Account2_No)" style="text-align:left;width:400px">
                       {{GetAccount2Name(Record)}}
                   </td>
 
-                  <td style="text-align:left;width:230px;color:black">
+                  <td style="text-align:left;width:210px;color:black">
                     {{Record.ChequeNo}}
                   </td>
-                  <td style="text-align:left;width:230px;color:black">
+                  <td style="text-align:left;width:210px;color:black">
                       {{Record.Narration}}
                   </td>
 
