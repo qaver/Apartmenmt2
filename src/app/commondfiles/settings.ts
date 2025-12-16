@@ -78,7 +78,7 @@ export class globalSettings
        else
        {
          this.url = "https://apartment-turso.onrender.com"; // running from either on render
-         this.url = "http://localhost:3000";
+        /// this.url = "http://localhost:3000";
        }
   }
   getUseLocalDatabase():boolean{ return this.useLocalDatabase};
