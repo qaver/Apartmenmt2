@@ -2,10 +2,10 @@
 import { VoiceRecogitionService } from './../../services/voice-recognition/voice-recogition.service';
 import { globalSettings } from './../../commondfiles/settings';
 
-import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, ChangeDetectorRef, DOCUMENT, Inject } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, ChangeDetectorRef, DOCUMENT, Inject, booleanAttribute, numberAttribute } from '@angular/core';
 import { CommonModule } from '@angular/common';
 ///import { ReportServiceService, Car } from '../../services/reportservice/report-service.service';
-import { Account, CodeName, dateFunctions, enumError, enumErrorText, ErrorMsg, GeneralLedgerRecord,CommonFileFunction, CommonCurrencyFunctions, reportTypesInt, IncExpStatmentRecord, IncExpAccountRecord } from '../../commondfiles/commondef';
+import { Account, CodeName, dateFunctions, enumError, enumErrorText, ErrorMsg, GeneralLedgerRecord,CommonFileFunction, CommonCurrencyFunctions, reportTypesInt, IncExpStatmentRecord, IncExpAccountRecord, reportConstants } from '../../commondfiles/commondef';
 import { ManageAccountsService } from '../../services/ManageAccountsService/manageaccounts.service';
 
 import { ExportCSVOptions, TableModule } from 'primeng/table';
@@ -119,7 +119,7 @@ export class ReportComponent  implements AfterViewInit
 
 
    isScrollable: boolean = true;
-   scrollH: string = "70vh"; // The original scroll height
+   scrollH: string = "60vh"; // The original scroll height
   ngAfterViewInit() {
     // You can access this.printContentRef.nativeElement here
      this.isLoading = false;
@@ -141,6 +141,7 @@ export class ReportComponent  implements AfterViewInit
     ];
   groupedCustomers: any[] = [];
 */
+  groupRowColor:string = "rgb(178,174,188)";
   reportTypes:string[] = ["General Ledger","Profit & Loss"];
   reportType:string = this.reportTypes[0];
   reportTypeInt:number = reportTypesInt.GENERALLEDGER;
@@ -178,11 +179,64 @@ export class ReportComponent  implements AfterViewInit
   public reportTotalBalanceText = "0.0"
 
   public reportFinished = false;
+  rgbCompare(rgbString1: string,rgbString2: string):boolean
+  {
+    // Regex matches numbers within rgb/rgba parentheses
+    const regex = /rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/;
+    const match = rgbString1.match(regex);
+
+    if (!match)
+      {
+        return false;
+    }
+
+   const match2 = rgbString2.match(regex);
+
+    if (!match2)
+      {
+        return false;
+    }
+
+    // Extract R, G, B (and A if present), converting them from string to number
+    // match[1] is R, match[2] is G, match[3] is B.
+    // match[4] is A (if it exists, otherwise it's undefined)
+
+    const r1 = parseInt(match[1], 10);
+    const g1 = parseInt(match[2], 10);
+    const b1 = parseInt(match[3], 10);
+
+    const r2 = parseInt(match2[1], 10);
+    const g2 = parseInt(match2[2], 10);
+    const b2 = parseInt(match2[3], 10);
+
+    if (r1 !== r2)
+      return false;
+     if (g1 !== g2)
+      return false;
+     if (b1 !== b2)
+      return false;
+
+    // Check if an alpha value was captured
+    let a1 = 0;
+    let a2 = 0;
+    if (match[4] !== undefined)
+    {
+        a1 = parseFloat(match[4])
+    }
+    if (match2[4] !== undefined)
+    {
+        a2 = parseFloat(match2[4])
+    }
+    if (a1 !== a2)
+      return false;
+    return true;
+}
+
   public colsGeneralLedger: any[] = [
     {field: 'Account1_Name',headerText:"Voucher No",hide:false,width:"260px",align:"left"},
     { field: 'VoucherNo',headerText:"Voucher No",hide:false,width:"260px",align:"left" },
-    { field: 'VoucherDate',headerText:"VoucherDate",hide:false,width:"260px",align:"left"},
-    { field: 'Account2_Name',headerText:"Particulars",hide:false,width:"330px",align:"left" },
+    { field: 'VoucherDate',headerText:"Date",hide:false,width:"260px",align:"left"},
+    { field: 'Account2_Name',headerText:"Particulars",hide:false,width:"330",align:"left" },
     { field: "ChequeNo",headerText:"ChequeNo",hide:false,width:"260px",align:"left" },
     { field: 'Narration',headerText:"Narration" ,hide:false,width:"260px",align:"left"},
     { field: 'LNarration' ,headerText:"LNarration",hide:false,width:"260px",align:"left"},
@@ -195,10 +249,10 @@ export class ReportComponent  implements AfterViewInit
     { field: '"Account2_No',headerText:"account2 no",hide:true,width:"0px",align:"left"},
   ];
   public colsIncExpStatement: any[] = [
-    {field:  'Expense_Account_Name',headerText:"Expenditure",hide:false,width:"330px" },
-    { field: 'Expense_Amount',headerText:"Amount",hide:false,width:"260px" },
-    {field:  'Income_Account_Name',headerText:"Income",hide:false,width:"330px" },
-    { field: 'Income_Amount',headerText:"Amount",hide:false,width:"260px" },
+    {field:  'Expense_Account_Name',headerText:"Expenditure",hide:false,width:"330px",align:"left" },
+    { field: 'Expense_Amount',headerText:"Amount",hide:false,width:"260px",align:"right" },
+    {field:  'Income_Account_Name',headerText:"Income",hide:false,width:"330px",align:"left" },
+    { field: 'Income_Amount',headerText:"Amount",hide:false,width:"260px",align:"right" },
   ];
   public colsReport: any[] = [];
   IsGeneralLedger():boolean
@@ -488,7 +542,7 @@ export class ReportComponent  implements AfterViewInit
                 lastYearGrowth: "13%",
             },
             {
-                name: "Domino's",
+                name: "D omino's",
                 sector: "Food",
                 thisYearSales: "$ 1,000,000,000",
                 lastYearSales: "$ 800,000,000",
@@ -578,7 +632,7 @@ export class ReportComponent  implements AfterViewInit
        if (this.platform.is('capacitor') || this.platform.is('cordova'))
        {
           this.mobileApp = true;
-          this.scrollH = "60vh";
+          this.scrollH = "50vh";
        }
       //this.reportTypes = ["General Ledger","Profit & Loss"];
       this.groupNames = ["All","General","Debtor","Creditor","Income","Expense","PettyCash","Cash","Bank"];
@@ -1059,7 +1113,369 @@ export class ReportComponent  implements AfterViewInit
 
   doc.save('general_ledger_grouped.pdf');
 }*/
+async saveReportFromDOM(fileName:string):Promise<string>
+{
+  /* this.messageService.addMsg("Saving to "+fileName);
 
+   const t1= document.querySelector('table');
+const columnStyles:any = {};
+
+if (t1 && t1.rows.length > 0) {
+    const headerRow = t1.rows[0];
+    for (let i = 0; i < headerRow.cells.length; i++) {
+        // Map DOM widths to autoTable column indices
+        columnStyles[i] = { cellWidth: headerRow.cells[i].offsetWidth };
+    }
+}
+const tt1 = this.tableRef.nativeElement.querySelector('table');
+// Use in autoTable
+ const doc1 = new jsPDF('portrait', 'pt', 'a4');
+autoTable(doc1,{
+    html: tt1,
+    columnStyles: columnStyles
+});
+doc1.save(fileName);
+return "";*/
+     // 1. TEMPORARILY DISABLE SCROLLING (Expand the table fully)
+      ///const oldScrollH = this.scrollH ;
+     /// const oldIsScrollable = this.isScrollable;
+     /// this.isScrollable = false;
+      //this.scrollH = ""; // Remove the height constraint
+
+      // Wait for Angular's change detection cycle to complete
+      // and the DOM to update with the full table height
+     /// await new Promise(resolve => setTimeout(resolve, 50));
+
+      // 2. CAPTURE THE FULL HTML ELEMENT
+
+      const tableEl = this.tableRef.nativeElement.querySelector('table');
+      if (!tableEl)
+      return "";
+      const rowCount = tableEl.rows.length;
+
+      if (rowCount <= 0)
+        return "";
+
+      const inputElement = this.printContent.nativeElement;
+      const originalHeight = inputElement.style.height;
+      const originalOverflow = inputElement.style.overflow;
+
+      ///const originalWidth = inputElement.style.width;
+      // Outer loop iterates through each row (<tr>)
+
+      const firstRow = tableEl.rows[0];
+      const colCount = firstRow.cells.length;
+      let totalColWidth:number = 0;
+      const exportColumns: any[] = [];
+      let cStyleArray:any[] = [];
+      for (let j = 0; j < colCount; j++)
+      {
+          let cellWidth:number = firstRow.cells[j].offsetWidth;
+          totalColWidth += cellWidth;
+          const cell = firstRow.cells[j];
+          const cellContent = cell.innerText || cell.textContent;
+          console.log( "heading " +cellContent)
+          exportColumns.push({headerText:cellContent});
+      }
+      let typeRecords:any[] = [];
+      for (let i = 1; i < rowCount; i++)
+      {
+          const row = tableEl.rows[i];
+          const colCount = row.cells.length;
+          let tableRow:any[] =[];
+          // Inner loop iterates through each cell (<td> or <th>) in the current row
+          let colDiplacement:number = 0;
+          let groupRow:boolean = false;
+          if (colCount > 0)
+          {
+             const firstCell = row.cells[0];
+             let cellcolSpan = firstCell.colSpan;
+             if (cellcolSpan > 1)
+             {
+                colDiplacement = (cellcolSpan-1);
+                let groupCellText:string = "";
+                if (colCount === 1)
+                {
+                  /// const cellContent = firstCell.innerText || firstCell.textContent;
+                  /// console.log("group row ",colCount,cellContent);
+                  const cellContent = firstCell.innerText || firstCell.textContent;
+                  groupCellText = reportConstants.GROUPTTEXT+cellContent;
+                  groupRow = true;
+                }
+                for (let j = 0; j < colDiplacement; j++)
+                {
+                  let colHeading = 'value';//+(j).toString();
+                  if (groupCellText !== "")
+                  {
+                    let text:string = groupCellText
+                    if (j !== 0 )
+                      text = "";
+                    tableRow.push({[colHeading]:text,styles: { halign:'center', valign:'middle', fillColor: this.groupRowColor,textColor:'#FFFFFF',fontStyle:'bold' }});
+                  }
+                  else
+                    tableRow.push({[colHeading]:""});
+                }
+
+             }
+          }
+          if (groupRow)
+          {
+            tableRow.push({value:""});
+          }
+          else
+          {
+              for (let j = 0; j < colCount; j++)
+              {
+                  const cell = row.cells[j];
+                  const computedStyle = window.getComputedStyle(cell);
+                  const textAlign = computedStyle.getPropertyValue('text-align');
+                  const verticalAlign = computedStyle.getPropertyValue('vertical-align');
+                  let textColor = computedStyle.getPropertyValue('color');
+                  if (textColor === 'transparent' || textColor.includes('rgba(0, 0, 0, 0)'))
+                  {
+                    // fallback color (e.g., white)
+                    textColor = '#000000';
+                  }
+                  let bgColor = computedStyle.getPropertyValue('background-color');
+                  if (bgColor === 'transparent' || bgColor.includes('rgba(0, 0, 0, 0)'))
+                  {
+                    //solid fallback color (e.g., white)
+                    bgColor = '#FFFFFF';
+                  }
+                  const fontWeight = computedStyle.getPropertyValue('font-weight');
+                  let isBold:boolean = false;
+                  if (fontWeight === 'bold' || parseInt(fontWeight, 10) >= 700)
+                    isBold = true;
+
+                  const fontStyle = computedStyle.getPropertyValue('font-style')
+                let isItalic:boolean = false;
+                  if (fontStyle === 'italic' || fontStyle === 'oblique')
+                    isItalic = true;
+
+                  let cellfontstyle:string = "normal";
+                  if (isBold && isItalic)
+                    cellfontstyle =  'bolditalic';
+                  else if (isBold)
+                    cellfontstyle = 'bold';
+                  else if (isItalic)
+                    cellfontstyle = 'italic';
+
+                ///  let cellcolSpan = cell.colSpan;
+
+                  const cellContent = cell.innerText || cell.textContent;
+                //  console.log(`Value at Row ${i}, Column ${j}: ${cellContent}`);
+                  let colHeading = 'value';//+(j+colDiplacement).toString();
+
+                  //tableRow.push({[colHeading]:cellContent,styles: { halign: textAlign, valign: verticalAlign, fillColor: bgColor,textColor:textColor,fontStyle:cellfontstyle, colSpan:cellcolSpan }});
+                  tableRow.push({[colHeading]:cellContent,styles: { halign: textAlign, valign: verticalAlign, fillColor: bgColor,textColor:textColor,fontStyle:cellfontstyle }});
+                /// console.log("col span for ",cellContent," = ",cellcolSpan);
+                // if(colDiplacement > 0)
+                {
+                /// if (this.rgbCompare(bgColor,this.groupRowColor))
+                  /// console.log("group row ",colCount,cellContent);
+                }
+              }
+          }
+          let rowOjbect:any =  Object.assign({}, tableRow);
+        /// console.log(rowOjbect);
+        typeRecords.push(tableRow);
+      }
+    //console.log(typeRecords);
+
+    if (this.mobileApp)
+    {
+        inputElement.style.height = 'auto'; // Force height to auto-calculate all content
+        // inputElement.style.width = 'auto'; // Force width to auto-calculate all content
+        inputElement.style.overflow = 'visible'; // Ensure nothing is hidden
+    }
+    let titleLength = 1;
+    if (this.reportTitle.length > 0)
+      titleLength = this.reportTitle.length;
+
+    let currentY = 30;
+    const doc = new jsPDF('portrait', 'pt', 'a4');
+    let pageWidth = doc.internal.pageSize.getWidth();
+
+     const colStyles:any[] = [];
+
+     /*let startCol = 0;
+     if (this.IsGeneralLedger())
+     {
+        startCol = 1;
+     }
+
+    for (let i = startCol; i <  this.colsReport.length;++i)
+    {
+       if(this.colsReport[i].hide)
+          continue;
+        exportColumns.push(this.colsReport[i]);
+        //cStyleArray.push({cellWidth:parseInt(this.colsReport[i].width,10), halign: this.colsReport[i].align });
+    }*/
+    let totalColAdujstedWidth = 0;
+
+    const firstBodyRow = tableEl.rows[0];
+    for (let j = 0; j < colCount; j++)
+    {
+       let adjustedColWidth:number = (pageWidth*firstBodyRow.cells[j].offsetWidth)/totalColWidth;
+       let alignment = "left";
+       totalColAdujstedWidth += adjustedColWidth;
+       cStyleArray.push({cellWidth:adjustedColWidth, halign:alignment });
+       console.log("colWidth",j," = ",adjustedColWidth , "alig mn = ",alignment);
+    }
+     console.log("total adj widht = ",totalColAdujstedWidth,"internal page wid = ",pageWidth);
+    let cStyle:any =  Object.assign({}, cStyleArray);
+
+    doc.text(this.reportTitle, (pageWidth-(titleLength*7.5))/2, currentY);
+    currentY += 20;
+
+    let groupRow:number = -100;
+     autoTable(doc, {
+      head: [exportColumns.map(c => c.headerText)],
+      body: typeRecords,
+
+      columnStyles:cStyle,
+      theme: 'grid',
+      startY: currentY,
+      margin: { left: 1, right: 1 }, // Indent the table slightly
+      styles: { fontSize: 9 ,halign: 'left'},
+      headStyles: { fillColor: [24,93,150], textColor: [255, 255, 255] ,halign: 'center' },
+      //rowPageBreak: 'avoid', // Prevent breaking groups across pages if possible
+      didParseCell: (data) =>
+      {
+          if (data.section === 'head')
+          {
+          }
+          else if (data.section === 'foot')
+          {
+              // Style the footer totals differently
+              // ...
+          }
+          else if (data.section === 'body')
+          {
+             /// for (let i = 1; i < data.table.columns.length;++i)
+              ///{
+                // 0 == subtotal , 1 = report total , 2 = op balance , 3 = normal row
+
+               /// if (data.column.index === i)
+               /// {
+                      ///let fieldName = "Col";//+data.column.index.toString();
+                      //console.log(exportColumns.length,data.table.columns.length,data.column.index,fieldName,typeRecords[data.row.index][data.column.index]);
+
+                      let cellValue = typeRecords[data.row.index][data.column.index];
+                      if (typeof cellValue === 'object' && cellValue !== null)
+                      {
+
+                         /// data.cell.text = [cellValue[fieldName] || ""];
+                         data.cell.text = [cellValue.value || ""];
+                          // Option B: Convert the whole object to a string for debugging
+                          // data.cell.text = [JSON.stringify(cellValue)];
+                      }
+                      else
+                      {
+                          // Normal string/number conversion
+                          data.cell.text = [cellValue ? String(cellValue) : ""];
+                      }
+                      if(data.column.index === 0)
+                      {
+                         let text:string = cellValue.value;
+                         if (text.startsWith(reportConstants.GROUPTTEXT))
+                         {
+                            text = text.replace(reportConstants.GROUPTTEXT,"");
+                            data.cell.text = [text];
+                            groupRow = data.row.index;
+                             const totalColumnCount = data.table.columns.length;
+                             if (data.column.index === 0)
+                              {
+                                  data.cell.colSpan = totalColumnCount; // Must match the total number of columns
+                              }
+                              else
+                              {
+                                  // Hide subsequent cells in that row
+                                  data.cell.styles.lineWidth = 0;
+                                  data.cell.styles.minCellHeight = 0;
+                              }
+                         }
+                         else
+                         {
+                           groupRow = -100;
+                         }
+                      }
+                     /*if (data.row.index === groupRow)
+                      {
+                         const totalColumnCount = data.table.columns.length;
+
+                        if (data.column.index === totalColumnCount - 1)
+                        {
+
+                        }
+
+                      }*/
+                      /// if (data.column.index === 0)
+                      /// {
+                        /*  let cellText:string = data.cell.text[0];
+                          if ((cellText.toLowerCase() === "sub total")||(cellText.toLowerCase() === "report total")||(cellText.toLowerCase() === "op. balance"))
+                          {
+                            data.cell.styles.textColor = [255, 0, 0];
+                            data.cell.styles.fontStyle = 'bolditalic';
+                          }*/
+                      /// }
+               ///   }
+             /// }
+          }
+      },
+       didDrawCell: (data) =>
+       {
+
+       }
+    });
+    console.log("out of doc")
+      if (this.mobileApp)
+      {
+          inputElement.style.height = originalHeight;
+          inputElement.style.overflow = originalOverflow;
+      }
+    // 4. REVERT SCROLLING PROPERTIES (Restore the original UI)
+    ///  this.isScrollable = oldIsScrollable;
+    ///  this.scrollH = oldScrollH;
+     if (this.mobileApp)
+    {
+      const pdfOutput = doc.output('datauristring').split(',')[1]; // Get Base64 string
+      try
+      {
+        const result =   Filesystem.writeFile({
+          path: fileName,
+          data: pdfOutput,
+          directory: Directory.Documents // Save to public Documents folder
+        //, encoding: Encoding.Base64
+        });
+        const result1 =   await Filesystem.writeFile({
+          path: fileName,
+          data: pdfOutput,
+          directory: Directory.Cache // Save to public Documents folder
+          //, encoding: Encoding.Base64
+        });
+      // this.messageService.addMsg("saved to "+fileName + ". ");
+
+        // Open the file using the File Opener plugin
+        FileOpener.open({
+          filePath: fileName,
+          contentType: 'application/pdf'
+        });
+        return result1.uri;
+
+      }
+      catch (e)
+      {
+        this.messageService.addMsg("Error Saving to "+fileName + ". "+ e);
+        console.error('Error saving PDF:', e);
+      }
+    }
+    else
+    {
+      doc.save(fileName);
+    }
+    return "";
+}
 async saveReport(fileName:string):Promise<string>
 {
  /* console.log(this.reportGrid);
@@ -1141,7 +1557,7 @@ async saveReport(fileName:string):Promise<string>
 
     Object.keys(groupedByType).forEach(Account1_Name =>
     {
-      console.log("www");
+      console.log("www ",Account1_Name);
       let currentBalance = 0.0;
       let groupDr = 0.0;
       let groupCr = 0.0;
@@ -1412,7 +1828,6 @@ async saveReport(fileName:string):Promise<string>
     });
     currentY = (doc as any).lastAutoTable.finalY + 30;
   });
-
  // 4. Save the PDF
     if (this.mobileApp)
     {
@@ -1449,7 +1864,16 @@ async saveReport(fileName:string):Promise<string>
     }
     else
     {
-      doc.save(fileName);
+      try
+      {
+        console.log(fileName);
+        doc.save(fileName);
+      }
+       catch (e)
+      {
+        this.messageService.addMsg("Error Saving to "+fileName + ". "+ e);
+        console.error('Error saving PDF:', e);
+      }
     }
     return "";
 }
@@ -1458,11 +1882,13 @@ async saveReport(fileName:string):Promise<string>
  {
   if (this.IsIncExpStatment())
   {
-     return this.saveReport(fileName);
+    this.saveReportFromDOM(fileName);
+    //// return this.saveReport(fileName );
   }
   else if (this.IsGeneralLedger())
   {
-    //return this.saveReport(fileName);
+     this.saveReportFromDOM(fileName);
+    ///return this.saveReport( fileName);
   }
 
     const exportColumns: any[] = []

@@ -184,7 +184,7 @@
           {
             <tr pRowGroupHeader style="height:35px">
 
-                    <td style="text-align:center;background-color:rgb(178,174,188);color: white"  colspan="9">
+                    <td style="text-align:center;color: white" [style.background-color]="groupRowColor" colspan="9">
                       <!-- <button type="button" pButton pRipple [pRowToggler]="Record" class="p-button-text p-button-rounded p-button-plain p-mr-2">
                           <span [ngClass]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></span>
                         </button> -->
@@ -297,19 +297,19 @@
             @else if (IsIncExpStatment())
             {
                <tr>
-                      <td [ngStyle]="OpeningRow(Record.expense.Account1_No)" style="text-align:left;width:230px;color:black">
+                      <td [ngStyle]="OpeningRow(Record.expense.Account1_No)" style="text-align:left;width:400px;color:black">
                           {{Record.expense.Account1_Name}}
                       </td>
-                      <td [ngStyle]="OpeningRow(Record.expense.Account1_No)" style="text-align:right;width:230px;color:black">
+                      <td [ngStyle]="OpeningRow(Record.expense.Account1_No)" style="text-align:right;width:200px;color:black">
                         @if (Record.expense.Account1_Name !== "")
                         {
                           {{convertNumberToString(Record.expense.Amount)}}
                         }
                       </td>
-                      <td [ngStyle]="OpeningRow(Record.expense.Account1_No)" style="text-align:left;width:230px;color:black">
+                      <td [ngStyle]="OpeningRow(Record.expense.Account1_No)" style="text-align:left;width:400px;color:black">
                             {{Record.income.Account1_Name}}
                       </td>
-                      <td [ngStyle]="OpeningRow(Record.expense.Account1_No)" style="text-align:right;width:230px;color:black">
+                      <td [ngStyle]="OpeningRow(Record.expense.Account1_No)" style="text-align:right;width:200px;color:black">
                          @if (Record.income.Account1_Name !== "")
                         {
                              {{convertNumberToString(Record.income.Amount)}}

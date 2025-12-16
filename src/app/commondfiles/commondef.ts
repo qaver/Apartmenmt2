@@ -170,6 +170,7 @@ export class  normalizedJV
   creditAccountName:string ="";
 };
 export const reportTypesInt = {GENERALLEDGER:0,TRIALBALANCE:1,INCOMEEXPENSESTATEMENT:3};
+export const reportConstants = {GROUPTTEXT:"[PACTGROUPROW]"};
 export const enumError = {EMPTYVOUCHERNO:-5000,EMPTYPAYMENTMODE:-4900,CHEQUENOEMPTY:-4800,
                           INVALIDVOUCHERDATE:-4700,INVALIDDUEDATE:-4600,
                           DEBITSCREDITSNOTEQUAL:-4500,EMPTYDATE:-4400,INVALIDDATE:-4300,
